@@ -77,5 +77,4 @@ public class Inspection {
                 ", violationLump='" + violationLump + '\'' +
                 '}';
     }
-
 }

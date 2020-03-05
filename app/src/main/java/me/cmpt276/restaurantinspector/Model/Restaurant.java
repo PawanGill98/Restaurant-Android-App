@@ -87,6 +87,7 @@ public class Restaurant {
                 ", facilityType='" + facilityType + '\'' +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
+                ", inspections=" + inspections +
                 '}';
     }
 }
