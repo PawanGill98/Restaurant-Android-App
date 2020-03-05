@@ -39,7 +39,7 @@ public class CSVReader {
                 //Log.d("MyActivity", "Just created: " + restaurant);
             }
         } catch (IOException e) {
-            //Log.wtf("MyActivity", "Error reading data file on line " + line, e);
+            Log.wtf("MyActivity", "Error reading data file on line " + line, e);
             e.printStackTrace();
         }
     }
@@ -77,7 +77,6 @@ public class CSVReader {
 
                 // Add inspection to matching restaurant
                 restaurantManager.addInspectionToRestaurant(inspection);
-
                 //Log.d("MyActivity", "Just created: " + inspection);
             }
         } catch (IOException e) {
