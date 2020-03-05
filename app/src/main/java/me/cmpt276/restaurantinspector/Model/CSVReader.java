@@ -23,8 +23,8 @@ public class CSVReader {
 
             while ((line = reader.readLine()) != null) {
                 //Log.d("MyActivity", "Line: " + line);
-                // Split by ','
-                String[] tokens = line.split(",");
+                // Split by ',' and '|'
+                String[] tokens = line.split(",|\\|");
 
                 // Read the data (excluding quotes for strings)
                 Restaurant restaurant = new Restaurant();
@@ -56,8 +56,8 @@ public class CSVReader {
 
             while ((line = reader.readLine()) != null) {
                 //Log.d("MyActivity", "Line: " + line);
-                // Split by ','
-                String[] tokens = line.split(",");
+                // Split by ',' and '|'
+                String[] tokens = line.split(",|\\|");
 
                 // Read the data (excluding quotes for strings)
                 Inspection inspection = new Inspection();
@@ -66,13 +66,21 @@ public class CSVReader {
                 inspection.setInspectionType(tokens[2].replace("\"", ""));
                 inspection.setNumCritical(Integer.parseInt(tokens[3]));
                 inspection.setNumNonCritical(Integer.parseInt(tokens[4]));
-                inspection.setHazardRating(tokens[5]);
+                inspection.setHazardRating(tokens[5].replace("\"", ""));
 
                 // Check for empty violation lump
                 if (tokens.length >= 7 && tokens[6].length() > 0) {
-                    inspection.setViolationLump(tokens[6]);
-                } else {
-                    inspection.setViolationLump("");
+
+                    // Add all violations to inspection data
+                    int count = 6;
+                    do {
+                        Violation violation = new Violation();
+                        violation.setID(Integer.parseInt(tokens[count++].replace("\"","")));
+                        violation.setCriticality(tokens[count++]);
+                        violation.setDescription(tokens[count++]);
+                        violation.setRepeatability(tokens[count++].replace("\"", ""));
+                        inspection.addViolation(violation);
+                    } while (tokens.length >= count+1 && tokens[count].length() > 0);
                 }
 
                 // Add inspection to matching restaurant

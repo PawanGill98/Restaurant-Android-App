@@ -1,5 +1,8 @@
 package me.cmpt276.restaurantinspector.Model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Inspection {
     private String trackingNumber;
     private String inspectionDate;
@@ -7,7 +10,19 @@ public class Inspection {
     private int numCritical;
     private int numNonCritical;
     private String hazardRating;
-    private String violationLump;
+    private List<Violation> violations = new ArrayList<>();
+
+    public void addViolation(Violation violation) {
+        violations.add(violation);
+    }
+
+    public List<Violation> getViolations() {
+        return violations;
+    }
+
+    public void setViolations(List<Violation> violations) {
+        this.violations = violations;
+    }
 
     public String getTrackingNumber() {
         return trackingNumber;
@@ -57,14 +72,6 @@ public class Inspection {
         this.hazardRating = hazardRating;
     }
 
-    public String getViolationLump() {
-        return violationLump;
-    }
-
-    public void setViolationLump(String violationLump) {
-        this.violationLump = violationLump;
-    }
-
     @Override
     public String toString() {
         return "Inspection{" +
@@ -74,7 +81,6 @@ public class Inspection {
                 ", numCritical=" + numCritical +
                 ", numNonCritical=" + numNonCritical +
                 ", hazardRating='" + hazardRating + '\'' +
-                ", violationLump='" + violationLump + '\'' +
                 '}';
     }
 }

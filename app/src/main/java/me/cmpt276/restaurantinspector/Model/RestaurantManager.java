@@ -1,7 +1,5 @@
 package me.cmpt276.restaurantinspector.Model;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
