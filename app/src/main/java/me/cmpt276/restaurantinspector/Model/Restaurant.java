@@ -1,5 +1,8 @@
 package me.cmpt276.restaurantinspector.Model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Restaurant {
     private String trackingNumber;
     private String name;
@@ -8,6 +11,7 @@ public class Restaurant {
     private String facilityType;
     private double latitude;
     private double longitude;
+    private List<Inspection> inspections = new ArrayList<>();
 
     public String getTrackingNumber() {
         return trackingNumber;
@@ -63,6 +67,14 @@ public class Restaurant {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public List<Inspection> getInspections() {
+        return inspections;
+    }
+
+    public void addInspection(Inspection inspection) {
+        inspections.add(inspection);
     }
 
     @Override
