@@ -30,6 +30,10 @@ public class RestaurantManager implements Iterable<Restaurant> {
         return null;
     }
 
+    public Restaurant getRestaurantByIndex(int index) {
+        return restaurants.get(index);
+    }
+
     public void addInspectionToRestaurant(Inspection inspection) {
         for (Restaurant restaurant : restaurants) {
             if (inspection.getTrackingNumber().equals(restaurant.getTrackingNumber())) {
