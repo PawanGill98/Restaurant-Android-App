@@ -10,7 +10,52 @@ public class Inspection {
     private int numCritical;
     private int numNonCritical;
     private String hazardRating;
+    private int daysSinceInspection;
+    private String fullInspectionDate;
+    private String howLongAgo;
+
     private List<Violation> violations = new ArrayList<>();
+
+    public String getHowLongAgo() {
+        return howLongAgo;
+    }
+
+    public void setHowLongAgo(int daysSinceInspection) {
+        if (daysSinceInspection <= 30) {
+            howLongAgo = daysSinceInspection + " days ago";
+        }
+        else if (daysSinceInspection <= 365) {
+            String month = Time.getMonthFromNumber(Integer.parseInt(inspectionDate.substring(4, 6)));
+            int dayNumber = Integer.parseInt(inspectionDate.substring(6, 8));
+            String day = Integer.toString(dayNumber);
+            howLongAgo = month + " " + day;
+        }
+        else {
+            String year = inspectionDate.substring(0, 4);
+            String month = Time.getMonthFromNumber(Integer.parseInt(inspectionDate.substring(4, 6)));
+            howLongAgo = month + " " + year;
+        }
+    }
+
+    public String getFullInspectionDate() {
+        return fullInspectionDate;
+    }
+
+    public void setFullInspectionDate(String date) {
+        String year = date.substring(0, 4);
+        String month = Time.getMonthFromNumber(Integer.parseInt(date.substring(4, 6)));
+        int dayNumber = Integer.parseInt(date.substring(6, 8));
+        String day = Integer.toString(dayNumber);
+        this.fullInspectionDate = month + " " + day + ", " + year;
+    }
+
+    public int getDaysSinceInspection() {
+        return daysSinceInspection;
+    }
+
+    public void setDaysSinceInspection(int daysSinceInspection) {
+        this.daysSinceInspection = daysSinceInspection;
+    }
 
     public void addViolation(Violation violation) {
         violations.add(violation);
@@ -81,6 +126,10 @@ public class Inspection {
                 ", numCritical=" + numCritical +
                 ", numNonCritical=" + numNonCritical +
                 ", hazardRating='" + hazardRating + '\'' +
+                ", daysSinceInspection=" + daysSinceInspection +
+                ", fullInspectionDate='" + fullInspectionDate + '\'' +
+                ", howLongAgo='" + howLongAgo + '\'' +
+                ", violations=" + violations +
                 '}';
     }
 }
