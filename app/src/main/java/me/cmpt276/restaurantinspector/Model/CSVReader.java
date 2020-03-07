@@ -7,8 +7,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CSVReader {
+    private static final int DESCRIPTION_START_INDEX = 4;
+    public static final int BRIEF_DESC_FIRST_ATTRIBUTE = 0;
+    public static final int BRIEF_DESC_SECOND_ATTRIBUTE = 1;
+
     private static RestaurantManager restaurantManager = RestaurantManager.getInstance();
 
     public static void readRestaurantData(InputStream is) {
@@ -61,7 +67,9 @@ public class CSVReader {
         }
     }
 
-    public static void readInspectionReportData(InputStream is) {
+    public static void readInspectionReportData(InputStream is, InputStream is2) {
+        List<String> briefDescriptions = readBriefDescription(is2);
+
         BufferedReader reader = new BufferedReader(
                 new InputStreamReader(is, Charset.forName("UTF-8"))
         );
@@ -85,6 +93,11 @@ public class CSVReader {
                 inspection.setNumCritical(Integer.parseInt(tokens[index++]));
                 inspection.setNumNonCritical(Integer.parseInt(tokens[index++]));
                 inspection.setHazardRating(tokens[index++].replace("\"", ""));
+                Time time = new Time();
+                long daysSinceInspection = time.calculateDaysSince(inspection.getInspectionDate());
+                inspection.setDaysSinceInspection((int) daysSinceInspection);
+                inspection.setFullInspectionDate(inspection.getInspectionDate());
+                inspection.setHowLongAgo((int) daysSinceInspection);
 
                 // Check for empty violation lump
                 if (!isColumnEmpty(tokens, index)) {
@@ -97,6 +110,11 @@ public class CSVReader {
                         violation.setCriticality(tokens[count++]);
                         violation.setDescription(tokens[count++]);
                         violation.setRepeatability(tokens[count++].replace("\"", ""));
+                        for (String description : briefDescriptions) {
+                            if (description.startsWith(Integer.toString(violation.getId()))) {
+                                violation.setBriefDescription(description.substring(DESCRIPTION_START_INDEX));
+                            }
+                        }
                         inspection.addViolation(violation);
                     } while (tokens.length >= count+1 && tokens[count].length() > 0);
                 }
@@ -108,6 +126,24 @@ public class CSVReader {
             Log.wtf("MyActivity", "Error reading data file on line " + line, e);
             e.printStackTrace();
         }
+    }
+
+    private static List<String> readBriefDescription(InputStream is) {
+        List<String> briefDescriptions = new ArrayList<>();
+        BufferedReader reader = new BufferedReader(
+                new InputStreamReader(is, Charset.forName("UTF-8"))
+        );
+        String line = "";
+        try {
+            while ((line = reader.readLine()) != null) {
+                String[] tokens = line.split(",");
+                briefDescriptions.add(tokens[BRIEF_DESC_FIRST_ATTRIBUTE] + "," + tokens[BRIEF_DESC_SECOND_ATTRIBUTE]);
+            }
+        } catch (IOException e) {
+            Log.wtf("MyActivity", "Error reading data file on line " + line, e);
+            e.printStackTrace();
+        }
+        return briefDescriptions;
     }
 
     private static boolean isColumnEmpty(String[] tokens, int col) {

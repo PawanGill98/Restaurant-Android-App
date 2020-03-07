@@ -4,6 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Inspection {
+    private static final int MONTH_START_INDEX = 4;
+    private static final int MONTH_END_INDEX = 6;
+    private static final int DAY_START_INDEX = 6;
+    private static final int DAY_END_INDEX = 8;
+    private static final int YEAR_START_INDEX = 0;
+    private static final int YEAR_END_INDEX = 4;
+    private static final int NUM_DAYS_MONTH = 30;
+    private static final int NUM_DAYS_YEAR = 365;
+
     private String trackingNumber;
     private String inspectionDate;
     private String inspectionType;
@@ -21,18 +30,18 @@ public class Inspection {
     }
 
     public void setHowLongAgo(int daysSinceInspection) {
-        if (daysSinceInspection <= 30) {
+        if (daysSinceInspection <= NUM_DAYS_MONTH) {
             howLongAgo = daysSinceInspection + " days ago";
         }
-        else if (daysSinceInspection <= 365) {
-            String month = Time.getMonthFromNumber(Integer.parseInt(inspectionDate.substring(4, 6)));
-            int dayNumber = Integer.parseInt(inspectionDate.substring(6, 8));
+        else if (daysSinceInspection <= NUM_DAYS_YEAR) {
+            String month = Time.getMonthFromNumber(Integer.parseInt(inspectionDate.substring(MONTH_START_INDEX, MONTH_END_INDEX)));
+            int dayNumber = Integer.parseInt(inspectionDate.substring(DAY_START_INDEX, DAY_END_INDEX));
             String day = Integer.toString(dayNumber);
             howLongAgo = month + " " + day;
         }
         else {
-            String year = inspectionDate.substring(0, 4);
-            String month = Time.getMonthFromNumber(Integer.parseInt(inspectionDate.substring(4, 6)));
+            String year = inspectionDate.substring(YEAR_START_INDEX, YEAR_END_INDEX);
+            String month = Time.getMonthFromNumber(Integer.parseInt(inspectionDate.substring(MONTH_START_INDEX, MONTH_END_INDEX)));
             howLongAgo = month + " " + year;
         }
     }
@@ -42,9 +51,9 @@ public class Inspection {
     }
 
     public void setFullInspectionDate(String date) {
-        String year = date.substring(0, 4);
-        String month = Time.getMonthFromNumber(Integer.parseInt(date.substring(4, 6)));
-        int dayNumber = Integer.parseInt(date.substring(6, 8));
+        String year = date.substring(YEAR_START_INDEX, YEAR_END_INDEX);
+        String month = Time.getMonthFromNumber(Integer.parseInt(date.substring(MONTH_START_INDEX, MONTH_END_INDEX)));
+        int dayNumber = Integer.parseInt(date.substring(YEAR_START_INDEX, YEAR_END_INDEX));
         String day = Integer.toString(dayNumber);
         this.fullInspectionDate = month + " " + day + ", " + year;
     }

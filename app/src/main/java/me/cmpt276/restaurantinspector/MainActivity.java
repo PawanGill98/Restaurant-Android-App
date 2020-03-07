@@ -31,9 +31,9 @@ public class MainActivity extends AppCompatActivity {
         restaurantManager = restaurantManager.getInstance();
 
         CSVReader.readRestaurantData(getResources().openRawResource(R.raw.restaurants_itr1));
-        CSVReader.readInspectionReportData(getResources().openRawResource(R.raw.inspectionreports_itr1));
+        CSVReader.readInspectionReportData(getResources().openRawResource(R.raw.inspectionreports_itr1), getResources().openRawResource(R.raw.brief_descriptions));
 
-        /**
+        /*
         // Iterate through all restaurants
         for (Restaurant restaurant : restaurantManager.getRestaurants()) {
             Log.d("Restaurants list: ", restaurant + "");
@@ -54,6 +54,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("Violations list: ", violation + "");
             }
         }
-         */
+        */
     }
 }

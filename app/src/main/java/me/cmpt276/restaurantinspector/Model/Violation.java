@@ -5,6 +5,15 @@ public class Violation {
     private String criticality;
     private String description;
     private String repeatability;
+    private String briefDescription;
+
+    public String getBriefDescription() {
+        return briefDescription;
+    }
+
+    public void setBriefDescription(String briefDescription) {
+        this.briefDescription = briefDescription;
+    }
 
     public int getId() {
         return id;
@@ -45,6 +54,7 @@ public class Violation {
                 ", criticality='" + criticality + '\'' +
                 ", description='" + description + '\'' +
                 ", repeatability='" + repeatability + '\'' +
+                ", briefDescription='" + briefDescription + '\'' +
                 '}';
     }
 }
