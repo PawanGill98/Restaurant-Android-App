@@ -46,7 +46,7 @@ public class RestaurantManager implements Iterable<Restaurant> {
         restaurants.add(restaurant);
     }
 
-    public List getList() {
+    public List<Restaurant> getRestaurants() {
         return restaurants;
     }
 

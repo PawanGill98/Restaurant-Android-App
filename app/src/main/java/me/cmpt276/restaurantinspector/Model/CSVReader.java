@@ -22,21 +22,38 @@ public class CSVReader {
             reader.readLine();
 
             while ((line = reader.readLine()) != null) {
-                //Log.d("MyActivity", "Line: " + line);
-                // Split by ',' and '|'
-                String[] tokens = line.split(",|\\|");
+                // Split by ','
+                String[] tokens = line.split(",");
 
-                // Read the data (excluding quotes for strings)
+                int index = 0;
                 Restaurant restaurant = new Restaurant();
-                restaurant.setTrackingNumber(tokens[0].replace("\"", ""));
-                restaurant.setName(tokens[1].replace("\"", ""));
-                restaurant.setAddress(tokens[2].replace("\"", ""));
-                restaurant.setCity(tokens[3].replace("\"", ""));
-                restaurant.setFacilityType(tokens[4].replace("\"", ""));
-                restaurant.setLatitude(Double.parseDouble(tokens[5]));
-                restaurant.setLongitude(Double.parseDouble(tokens[6]));
+                restaurant.setTrackingNumber(tokens[index++].replace("\"", ""));
+                String restaurantName = tokens[index++];
+
+                // If name is surrounded by quotes
+                if (restaurantName.startsWith("\"")) {
+                    int nameIndex = index;
+
+                    // Check for existing commas within name
+                    while (!tokens[nameIndex].contains("\"")) {
+                        restaurantName = restaurantName + "," + tokens[nameIndex];
+                        nameIndex++;
+                    }
+                    if (!tokens[nameIndex].startsWith("\"")) {
+                        restaurantName = restaurantName + "," + tokens[nameIndex];
+                        nameIndex++;
+                    }
+                    index = nameIndex;
+                }
+                restaurant.setName(restaurantName.replace("\"", ""));
+                restaurant.setAddress(tokens[index++].replace("\"", ""));
+                restaurant.setCity(tokens[index++].replace("\"", ""));
+                restaurant.setFacilityType(tokens[index++].replace("\"", ""));
+                restaurant.setLatitude(Double.parseDouble(tokens[index++]));
+                restaurant.setLongitude(Double.parseDouble(tokens[index]));
+
+                // Add restaurant to list of restaurants
                 restaurantManager.addRestaurant(restaurant);
-                //Log.d("MyActivity", "Just created: " + restaurant);
             }
         } catch (IOException e) {
             Log.wtf("MyActivity", "Error reading data file on line " + line, e);
@@ -55,24 +72,25 @@ public class CSVReader {
             reader.readLine();
 
             while ((line = reader.readLine()) != null) {
-                //Log.d("MyActivity", "Line: " + line);
                 // Split by ',' and '|'
                 String[] tokens = line.split(",|\\|");
 
+                int index = 0;
+
                 // Read the data (excluding quotes for strings)
                 Inspection inspection = new Inspection();
-                inspection.setTrackingNumber(tokens[0].replace("\"", ""));
-                inspection.setInspectionDate(tokens[1].replace("\"", ""));
-                inspection.setInspectionType(tokens[2].replace("\"", ""));
-                inspection.setNumCritical(Integer.parseInt(tokens[3]));
-                inspection.setNumNonCritical(Integer.parseInt(tokens[4]));
-                inspection.setHazardRating(tokens[5].replace("\"", ""));
+                inspection.setTrackingNumber(tokens[index++].replace("\"", ""));
+                inspection.setInspectionDate(tokens[index++].replace("\"", ""));
+                inspection.setInspectionType(tokens[index++].replace("\"", ""));
+                inspection.setNumCritical(Integer.parseInt(tokens[index++]));
+                inspection.setNumNonCritical(Integer.parseInt(tokens[index++]));
+                inspection.setHazardRating(tokens[index++].replace("\"", ""));
 
                 // Check for empty violation lump
-                if (tokens.length >= 7 && tokens[6].length() > 0) {
+                if (!isColumnEmpty(tokens, index)) {
 
                     // Add all violations to inspection data
-                    int count = 6;
+                    int count = index;
                     do {
                         Violation violation = new Violation();
                         violation.setID(Integer.parseInt(tokens[count++].replace("\"","")));
@@ -85,11 +103,17 @@ public class CSVReader {
 
                 // Add inspection to matching restaurant
                 restaurantManager.addInspectionToRestaurant(inspection);
-                //Log.d("MyActivity", "Just created: " + inspection);
             }
         } catch (IOException e) {
             Log.wtf("MyActivity", "Error reading data file on line " + line, e);
             e.printStackTrace();
         }
+    }
+
+    private static boolean isColumnEmpty(String[] tokens, int col) {
+        if (tokens.length > col+1 && tokens[col].length() > 0) {
+            return false;
+        }
+        return true;
     }
 }
