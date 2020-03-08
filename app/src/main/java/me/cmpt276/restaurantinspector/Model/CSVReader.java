@@ -121,6 +121,12 @@ public class CSVReader {
 
                 // Add inspection to matching restaurant
                 restaurantManager.addInspectionToRestaurant(inspection);
+
+                for (Restaurant restaurant : restaurantManager.getRestaurants()) {
+                    if (restaurant.hasInspections()) {
+                        restaurant.sortInspectionDates();
+                    }
+                }
             }
         } catch (IOException e) {
             Log.wtf("MyActivity", "Error reading data file on line " + line, e);
