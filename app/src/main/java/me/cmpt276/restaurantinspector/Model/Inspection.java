@@ -53,7 +53,7 @@ public class Inspection {
     public void setFullInspectionDate(String date) {
         String year = date.substring(YEAR_START_INDEX, YEAR_END_INDEX);
         String month = Time.getMonthFromNumber(Integer.parseInt(date.substring(MONTH_START_INDEX, MONTH_END_INDEX)));
-        int dayNumber = Integer.parseInt(date.substring(YEAR_START_INDEX, YEAR_END_INDEX));
+        int dayNumber = Integer.parseInt(date.substring(DAY_START_INDEX, DAY_END_INDEX));
         String day = Integer.toString(dayNumber);
         this.fullInspectionDate = month + " " + day + ", " + year;
     }
