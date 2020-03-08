@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">RestaurantInspector</string>
+    <string name="second_screen">Second screen</string>
+    <string name="restaurant_name">Restaurant name</string>
+    <string name="restaurant_address">Restaurant address</string>
+    <string name="gps_coords">GPS coords:</string>
 </resources>

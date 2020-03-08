@@ -2,8 +2,11 @@ package me.cmpt276.restaurantinspector;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,33 +31,49 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        restaurantManager = restaurantManager.getInstance();
+        restaurantManager = RestaurantManager.getInstance();
 
         CSVReader.readRestaurantData(getResources().openRawResource(R.raw.restaurants_itr1));
-        CSVReader.readInspectionReportData(getResources().openRawResource(R.raw.inspectionreports_itr1), getResources().openRawResource(R.raw.brief_descriptions));
+        CSVReader.readInspectionReportData(getResources().openRawResource(R.raw.inspectionreports_itr1),
+                getResources().openRawResource(R.raw.brief_descriptions));
+
+        setupCallSecondActivityButton();
 
 
 
-        // Iterate through all restaurants
-        for (Restaurant restaurant : restaurantManager.getRestaurants()) {
-            Log.d("Restaurants list: ", restaurant + "");
-        }
+//        // Iterate through all restaurants
+//        for (Restaurant restaurant : restaurantManager.getRestaurants()) {
+//            Log.d("Restaurants list: ", restaurant + "");
+//        }
+//
+//        // Get restaurant by tracking number. Can also get by index using getRestaurantByIndex(int);
+//        Restaurant restaurant = restaurantManager.getRestaurantByTrackingNumber("SDFO-8HKP7E");
+//        Log.d("Individual restaurant: ", restaurant + "");
+//
+//        // List of inspections from restaurant above
+//        List<Inspection> inspections = restaurant.getInspections();
+//        for (Inspection inspection : inspections) {
+//            Log.d("Inspections list: ", inspection + "");
+//
+//            // List of violations from inspection above
+//            List<Violation> violations = inspection.getViolations();
+//            for (Violation violation : violations) {
+//                Log.d("Violations list: ", violation + "");
+//            }
+//        }
 
-        // Get restaurant by tracking number. Can also get by index using getRestaurantByIndex(int);
-        Restaurant restaurant = restaurantManager.getRestaurantByTrackingNumber("SDFO-8HKP7E");
-        Log.d("Individual restaurant: ", restaurant + "");
 
-        // List of inspections from restaurant above
-        List<Inspection> inspections = restaurant.getInspections();
-        for (Inspection inspection : inspections) {
-            Log.d("Inspections list: ", inspection + "");
+    }
 
-            // List of violations from inspection above
-            List<Violation> violations = inspection.getViolations();
-            for (Violation violation : violations) {
-                Log.d("Violations list: ", violation + "");
+    private void setupCallSecondActivityButton() {
+        Button button = findViewById(R.id.call_second_screan);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = SingleRestaurantInspection.makeIntent(MainActivity.this, restaurantManager.getRestaurantByIndex(0));
+                startActivity(intent);
             }
-        }
+        });
 
     }
 }
