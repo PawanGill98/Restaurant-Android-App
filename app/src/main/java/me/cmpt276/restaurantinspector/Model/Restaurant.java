@@ -1,6 +1,11 @@
 package me.cmpt276.restaurantinspector.Model;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class Restaurant {
@@ -73,8 +78,31 @@ public class Restaurant {
         return inspections;
     }
 
+    public boolean hasInspections() {
+        if (inspections.size() == 0) {
+            return false;
+        }
+        return true;
+    }
+
     public void addInspection(Inspection inspection) {
         inspections.add(inspection);
+    }
+
+    // Referenced from: https://www.youtube.com/watch?v=DYNWCUMdWfE
+    public void sortInspectionDates() {
+        final DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        Collections.sort(inspections, new Comparator<Inspection>() {
+            @Override
+            public int compare(Inspection inspection1, Inspection inspection2) {
+                try {
+                    return dateFormat.parse(inspection1.getInspectionDate()).compareTo(dateFormat.parse(inspection2.getInspectionDate()));
+                } catch (ParseException e) {
+                    throw new IllegalArgumentException(e);
+                }
+            }
+        });
+        Collections.reverse(inspections);
     }
 
     @Override
