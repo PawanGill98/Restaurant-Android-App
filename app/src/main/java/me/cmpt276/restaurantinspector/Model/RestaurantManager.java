@@ -1,6 +1,8 @@
 package me.cmpt276.restaurantinspector.Model;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -20,6 +22,15 @@ public class RestaurantManager implements Iterable<Restaurant> {
     }
 
     private List<Restaurant> restaurants = new ArrayList<>();
+
+    public void sortRestaurantNames() {
+        Collections.sort(restaurants, new Comparator<Restaurant>() {
+            @Override
+            public int compare(Restaurant restaurant1, Restaurant restaurant2) {
+                return restaurant1.getName().compareToIgnoreCase(restaurant2.getName());
+            }
+        });
+    }
 
     public Restaurant getRestaurantByTrackingNumber(String trackingNumber) {
         for (Restaurant restaurant : restaurants) {
