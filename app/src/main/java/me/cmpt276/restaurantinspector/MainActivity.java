@@ -35,7 +35,33 @@ public class MainActivity extends AppCompatActivity {
         restaurantManager = restaurantManager.getInstance();
 
         CSVReader.readRestaurantData(getResources().openRawResource(R.raw.restaurants_itr1));
-        CSVReader.readInspectionReportData(getResources().openRawResource(R.raw.inspectionreports_itr1), getResources().openRawResource(R.raw.brief_descriptions));
+        CSVReader.readInspectionReportData(getResources().openRawResource(R.raw.inspectionreports_itr1),
+                getResources().openRawResource(R.raw.brief_descriptions));
+
+        setupCallSecondActivityButton();
+
+
+
+//        // Iterate through all restaurants
+//        for (Restaurant restaurant : restaurantManager.getRestaurants()) {
+//            Log.d("Restaurants list: ", restaurant + "");
+//        }
+//
+//        // Get restaurant by tracking number. Can also get by index using getRestaurantByIndex(int);
+//        Restaurant restaurant = restaurantManager.getRestaurantByTrackingNumber("SDFO-8HKP7E");
+//        Log.d("Individual restaurant: ", restaurant + "");
+//
+//        // List of inspections from restaurant above
+//        List<Inspection> inspections = restaurant.getInspections();
+//        for (Inspection inspection : inspections) {
+//            Log.d("Inspections list: ", inspection + "");
+//
+//            // List of violations from inspection above
+//            List<Violation> violations = inspection.getViolations();
+//            for (Violation violation : violations) {
+//                Log.d("Violations list: ", violation + "");
+//            }
+//        }
 
         myRestaurants = restaurantManager.getRestaurants();
         populateListView();

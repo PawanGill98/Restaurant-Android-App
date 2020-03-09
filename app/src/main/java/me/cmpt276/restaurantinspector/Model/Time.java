@@ -22,7 +22,7 @@ public class Time {
         int day = Integer.parseInt(dateString.substring(DAY_START_INDEX, DAY_END_INDEX));
         dateCalendar.set(year, month - 1, day);
         Date date = dateCalendar.getTime();
-        long difference = (today.getTime() - date.getTime()) / NUM_MILLISECONDS_IN_DAY;
+        long difference = (today.getTime() - date.getTime()) / NUM_MILLISECONDS_IN_DAY; 
         return Math.abs(difference);
     }
 
