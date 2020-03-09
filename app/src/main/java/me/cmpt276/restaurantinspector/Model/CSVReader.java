@@ -61,6 +61,7 @@ public class CSVReader {
                 // Add restaurant to list of restaurants
                 restaurantManager.addRestaurant(restaurant);
             }
+            restaurantManager.sortRestaurantNames();
         } catch (IOException e) {
             Log.wtf("MyActivity", "Error reading data file on line " + line, e);
             e.printStackTrace();
