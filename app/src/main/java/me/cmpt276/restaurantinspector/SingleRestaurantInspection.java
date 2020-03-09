@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import me.cmpt276.restaurantinspector.Model.Restaurant;
 public class SingleRestaurantInspection extends AppCompatActivity {
 
     private static Restaurant restaurant;
+    private static Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +36,9 @@ public class SingleRestaurantInspection extends AppCompatActivity {
         setupToolbar();
         setupTextView();
         populateListView();
+        for(Inspection inspection : restaurant.getInspections()){
+            Log.d("Inspections", ""+inspection);
+        }
     }
 
     private void setupToolbar() {
@@ -64,6 +69,7 @@ public class SingleRestaurantInspection extends AppCompatActivity {
 
     public static Intent makeIntent(Context c, Restaurant restaurant){
         SingleRestaurantInspection.restaurant = restaurant;
+        context = c;
         return new Intent(c, SingleRestaurantInspection.class);
     }
 
@@ -75,7 +81,7 @@ public class SingleRestaurantInspection extends AppCompatActivity {
 
     private class MyListAdapter extends ArrayAdapter<Inspection>{
         public MyListAdapter(){
-            super(SingleRestaurantInspection.this, R.layout.item_view, restaurant.getInspections());
+            super(context, R.layout.item_view, restaurant.getInspections());
         }
 
         @NonNull
@@ -90,10 +96,12 @@ public class SingleRestaurantInspection extends AppCompatActivity {
             int id = chooseHazardSignColor(position);
             imageView.setImageDrawable(getResources().getDrawable(id));
 
-//            TextView view = findViewById(R.id.screen2_critical_issue);
-//            view.setText("hello");
+            TextView view = itemView.findViewById(R.id.screen2_critical_issue);
+            view.setText(getString(R.string.number_critical_issues,
+                    restaurant.getInspections().get(position).getNumCritical()));
 
-            return imageView;
+
+            return itemView;
         }
     }
 

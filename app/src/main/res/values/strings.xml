@@ -8,5 +8,6 @@
     <string name="non_critical_issues_found">non-critical issues found</string>
     <string name="address_city">%1$s, %2$s</string>
     <string name="latitude_longitude">GPS (%1$f, %2$f)</string>
+    <string name="number_critical_issues">%1$d critical issues found</string>
     <string name="date">date</string>
 </resources>
