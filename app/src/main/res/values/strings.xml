@@ -6,5 +6,7 @@
     <string name="gps_coords">GPS coords:</string>
     <string name="critical_issues_found">critical issues found</string>
     <string name="non_critical_issues_found">non-critical issues found</string>
+    <string name="address_city">%1$s, %2$s</string>
+    <string name="latitude_longitude">GPS (%1$f, %2$f)</string>
     <string name="date">date</string>
 </resources>
