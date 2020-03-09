@@ -4,4 +4,7 @@
     <string name="restaurant_name">Restaurant name</string>
     <string name="restaurant_address">Restaurant address</string>
     <string name="gps_coords">GPS coords:</string>
+    <string name="critical_issues_found">critical issues found</string>
+    <string name="non_critical_issues_found">non-critical issues found</string>
+    <string name="date">date</string>
 </resources>
