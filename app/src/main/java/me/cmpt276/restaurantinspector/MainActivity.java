@@ -2,6 +2,7 @@ package me.cmpt276.restaurantinspector;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -37,31 +38,6 @@ public class MainActivity extends AppCompatActivity {
         CSVReader.readRestaurantData(getResources().openRawResource(R.raw.restaurants_itr1));
         CSVReader.readInspectionReportData(getResources().openRawResource(R.raw.inspectionreports_itr1),
                 getResources().openRawResource(R.raw.brief_descriptions));
-
-        setupCallSecondActivityButton();
-
-
-
-//        // Iterate through all restaurants
-//        for (Restaurant restaurant : restaurantManager.getRestaurants()) {
-//            Log.d("Restaurants list: ", restaurant + "");
-//        }
-//
-//        // Get restaurant by tracking number. Can also get by index using getRestaurantByIndex(int);
-//        Restaurant restaurant = restaurantManager.getRestaurantByTrackingNumber("SDFO-8HKP7E");
-//        Log.d("Individual restaurant: ", restaurant + "");
-//
-//        // List of inspections from restaurant above
-//        List<Inspection> inspections = restaurant.getInspections();
-//        for (Inspection inspection : inspections) {
-//            Log.d("Inspections list: ", inspection + "");
-//
-//            // List of violations from inspection above
-//            List<Violation> violations = inspection.getViolations();
-//            for (Violation violation : violations) {
-//                Log.d("Violations list: ", violation + "");
-//            }
-//        }
 
         myRestaurants = restaurantManager.getRestaurants();
         populateListView();
@@ -160,12 +136,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void registerClickCallBack() {
-        ListView listView = (ListView) findViewById(R.id.restaurantListView);
+        ListView listView = findViewById(R.id.restaurantListView);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Restaurant clickedRestaurant = myRestaurants.get(i);
-                Toast.makeText(MainActivity.this, "!", Toast.LENGTH_LONG).show();
+                Intent intent = SingleRestaurantInspection.makeIntent(MainActivity.this, restaurantManager.getRestaurantByIndex(i));
+                startActivity(intent);
             }
         });
     }

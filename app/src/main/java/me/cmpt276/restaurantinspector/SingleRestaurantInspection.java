@@ -26,7 +26,6 @@ import me.cmpt276.restaurantinspector.Model.Restaurant;
 public class SingleRestaurantInspection extends AppCompatActivity {
 
     private static Restaurant restaurant;
-    private static Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +68,6 @@ public class SingleRestaurantInspection extends AppCompatActivity {
 
     public static Intent makeIntent(Context c, Restaurant restaurant){
         SingleRestaurantInspection.restaurant = restaurant;
-        context = c;
         return new Intent(c, SingleRestaurantInspection.class);
     }
 
@@ -81,7 +79,7 @@ public class SingleRestaurantInspection extends AppCompatActivity {
 
     private class MyListAdapter extends ArrayAdapter<Inspection>{
         public MyListAdapter(){
-            super(context, R.layout.item_view, restaurant.getInspections());
+            super(SingleRestaurantInspection.this, R.layout.item_view, restaurant.getInspections());
         }
 
         @NonNull
