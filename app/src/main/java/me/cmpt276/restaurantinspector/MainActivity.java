@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Action Bar
-        getSupportActionBar().setTitle("List of Restaurant's");
+        getSupportActionBar().setTitle("List of Restaurants");
         restaurantManager = restaurantManager.getInstance();
 
         CSVReader.readRestaurantData(getResources().openRawResource(R.raw.restaurants_itr1));
@@ -97,15 +97,18 @@ public class MainActivity extends AppCompatActivity {
                 Resources res = getContext().getResources();
                 ImageView hazardIcon = (ImageView) itemView.findViewById(R.id.item_hazardIcon);
                 if(currentRestaurant.getInspections().get(0).getHazardRating().equals("Low")) {
-                    int newColor = res.getColor(R.color.new_color);
-                    hazardIcon.setColorFilter(newColor, PorterDuff.Mode.SRC_ATOP);
-                }
-                else if(currentRestaurant.getInspections().get(0).getHazardRating().equals("Moderate")) {
+                    hazardIcon.setImageDrawable(getResources().getDrawable(R.drawable.low));
                     int newColor = res.getColor(R.color.colorPrimary);
                     hazardIcon.setColorFilter(newColor, PorterDuff.Mode.SRC_ATOP);
                 }
+                else if(currentRestaurant.getInspections().get(0).getHazardRating().equals("Moderate")) {
+                    hazardIcon.setImageDrawable(getResources().getDrawable(R.drawable.moderate));
+                    int newColor = res.getColor(R.color.yellow);
+                    hazardIcon.setColorFilter(newColor, PorterDuff.Mode.SRC_ATOP);
+                }
                 else if(currentRestaurant.getInspections().get(0).getHazardRating().equals("High")) {
-                    int newColor = res.getColor(R.color.colorAccent);
+                    hazardIcon.setImageDrawable(getResources().getDrawable(R.drawable.high));
+                    int newColor = res.getColor(R.color.red);
                     hazardIcon.setColorFilter(newColor, PorterDuff.Mode.SRC_ATOP);
                 }
 
@@ -122,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
                 //Hazard Icon Colour
                 Resources res = getContext().getResources();
                 ImageView hazardIcon = (ImageView) itemView.findViewById(R.id.item_hazardIcon);
-                int newColor = res.getColor(R.color.colorPrimary);
+                int newColor = res.getColor(R.color.grey);
                 hazardIcon.setColorFilter(newColor, PorterDuff.Mode.SRC_ATOP);
                 //Issues;
                 TextView issues = (TextView) itemView.findViewById(R.id.item_issues);
