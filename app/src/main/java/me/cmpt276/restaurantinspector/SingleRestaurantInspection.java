@@ -3,22 +3,19 @@ package me.cmpt276.restaurantinspector;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import me.cmpt276.restaurantinspector.Model.Inspection;
 import me.cmpt276.restaurantinspector.Model.Restaurant;
@@ -35,9 +32,7 @@ public class SingleRestaurantInspection extends AppCompatActivity {
         setupToolbar();
         setupTextView();
         populateListView();
-        for(Inspection inspection : restaurant.getInspections()){
-            Log.d("Inspections", ""+inspection);
-        }
+        registerClickCallBack();
     }
 
     private void setupToolbar() {
@@ -50,12 +45,13 @@ public class SingleRestaurantInspection extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
-        if(item.getItemId() == android.R.id.home){
+        if (item.getItemId() == android.R.id.home) {
             finish();
         }
 
         return super.onOptionsItemSelected(item);
     }
+
     private void setupTextView() {
         TextView view = findViewById(R.id.screen2_restaurant_name);
         view.setText(restaurant.getName());
@@ -66,7 +62,7 @@ public class SingleRestaurantInspection extends AppCompatActivity {
     }
 
 
-    public static Intent makeIntent(Context c, Restaurant restaurant){
+    public static Intent makeIntent(Context c, Restaurant restaurant) {
         SingleRestaurantInspection.restaurant = restaurant;
         return new Intent(c, SingleRestaurantInspection.class);
     }
@@ -77,8 +73,8 @@ public class SingleRestaurantInspection extends AppCompatActivity {
         list.setAdapter(adapter);
     }
 
-    private class MyListAdapter extends ArrayAdapter<Inspection>{
-        public MyListAdapter(){
+    private class MyListAdapter extends ArrayAdapter<Inspection> {
+        public MyListAdapter() {
             super(SingleRestaurantInspection.this, R.layout.item_view, restaurant.getInspections());
         }
 
@@ -86,7 +82,7 @@ public class SingleRestaurantInspection extends AppCompatActivity {
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             View itemView = convertView;
-            if(itemView == null){
+            if (itemView == null) {
                 itemView = getLayoutInflater().inflate(R.layout.item_view, parent, false);
             }
 
@@ -106,10 +102,10 @@ public class SingleRestaurantInspection extends AppCompatActivity {
     private int chooseHazardSignColor(int position) {
         String hazard = restaurant.getInspections().get(position).getHazardRating();
         int id;
-        switch (hazard){
+        switch (hazard) {
             case "Low":
-               id = R.drawable.warning_green;
-               break;
+                id = R.drawable.warning_green;
+                break;
             case "Moderate":
                 id = R.drawable.warning_yellow;
                 break;
@@ -121,4 +117,16 @@ public class SingleRestaurantInspection extends AppCompatActivity {
         }
         return id;
     }
+
+    private void registerClickCallBack() {
+        ListView list = findViewById(R.id.screen2_list_view);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = InspectionActivity.makeIntent(SingleRestaurantInspection.this, restaurant.getInspections().get(position));
+                startActivity(intent);
+            }
+        });
+    }
 }
+

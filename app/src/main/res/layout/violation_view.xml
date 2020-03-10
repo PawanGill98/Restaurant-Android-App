@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/item_bg">
+
+    <ImageView
+        android:id="@+id/hazard_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="0dp"
+        android:adjustViewBounds="true"
+        android:maxWidth="50dp"
+        android:maxHeight="50dp"
+        app:srcCompat="@drawable/hazard" />
+
+    <TextView
+        android:id="@+id/violation_id_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="16dp"
+        android:textStyle="bold"
+        android:textColor="@color/BLACK"
+        android:textSize="14dp"
+        android:layout_toEndOf="@+id/hazard_view"
+        android:layout_toRightOf="@+id/hazard_view"
+        android:text="VIOLATION_ID" />
+
+    <TextView
+        android:id="@+id/brief_desc_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="16dp"
+        android:textStyle="bold"
+        android:textColor="@color/BLACK"
+        android:textSize="14dp"
+        android:layout_toEndOf="@+id/violation_id_view"
+        android:layout_toRightOf="@+id/violation_id_view"
+        android:text="BRIEF_DESC" />
+</RelativeLayout>
