@@ -100,15 +100,15 @@ public class InspectionActivity extends AppCompatActivity {
         hazardLevel.setImageResource(R.drawable.hazard);
 
         if(inspect.getHazardRating().equals("Low")) {
-            int color = res.getColor(R.color.GREEN);
+            int color = res.getColor(R.color.green);
             hazardLevel.setColorFilter(color);
         }
         else if(inspect.getHazardRating().equals("Moderate")) {
-            int color = res.getColor(R.color.ORANGE);
+            int color = res.getColor(R.color.yellow);
             hazardLevel.setColorFilter(color);
         }
         else if(inspect.getHazardRating().equals("High")) {
-            int color = res.getColor(R.color.RED);
+            int color = res.getColor(R.color.red);
             hazardLevel.setColorFilter(color);
         }
     }
@@ -139,12 +139,12 @@ public class InspectionActivity extends AppCompatActivity {
 
             if(currentViolation.getCriticality().equals("Critical")) {
                 imageView.setImageResource(R.drawable.critical);
-                int color = res.getColor(R.color.RED);
+                int color = res.getColor(R.color.red);
                 imageView.setColorFilter(color);
             }
             else{
                 imageView.setImageResource(R.drawable.non_critical);
-                int color = res.getColor(R.color.ORANGE);
+                int color = res.getColor(R.color.yellow);
                 imageView.setColorFilter(color);
             }
 
