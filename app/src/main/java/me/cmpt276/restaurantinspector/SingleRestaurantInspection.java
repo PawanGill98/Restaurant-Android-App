@@ -3,6 +3,7 @@ package me.cmpt276.restaurantinspector;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import me.cmpt276.restaurantinspector.Model.Inspection;
 import me.cmpt276.restaurantinspector.Model.Restaurant;
@@ -45,11 +47,9 @@ public class SingleRestaurantInspection extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
         if (item.getItemId() == android.R.id.home) {
             finish();
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -129,8 +129,15 @@ public class SingleRestaurantInspection extends AppCompatActivity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = InspectionActivity.makeIntent(SingleRestaurantInspection.this, restaurant.getInspections().get(position));
-                startActivity(intent);
+                if(restaurant.getInspections().get(position).getNumCritical() +
+                        restaurant.getInspections().get(position).getNumNonCritical() == 0){
+                    FragmentManager manager = getSupportFragmentManager();
+                    SecondScreenPopUpFragment dialog = new SecondScreenPopUpFragment();
+                    dialog.show(manager, "Inspection without violations");
+                }else {
+                    Intent intent = InspectionActivity.makeIntent(SingleRestaurantInspection.this, restaurant.getInspections().get(position));
+                    startActivity(intent);
+                }
             }
         });
     }
