@@ -1,6 +1,7 @@
 package me.cmpt276.restaurantinspector;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import android.content.Intent;
 import android.content.res.Resources;
@@ -108,9 +109,17 @@ public class MainActivity extends AppCompatActivity {
         ListView listView = findViewById(R.id.restaurantListView);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = SingleRestaurantInspection.makeIntent(MainActivity.this, restaurantManager.getRestaurantByIndex(i));
-                startActivity(intent);
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                if(!myRestaurants.get(position).hasInspections()){
+                    FragmentManager manager = getSupportFragmentManager();
+                    FirstScreenPopUpFragment dialog = new FirstScreenPopUpFragment();
+                    dialog.show(manager, "Inspection without violations");
+                }
+                else {
+                    Intent intent = SingleRestaurantInspection.makeIntent(MainActivity.this,
+                            restaurantManager.getRestaurantByIndex(position));
+                    startActivity(intent);
+                }
             }
         });
     }

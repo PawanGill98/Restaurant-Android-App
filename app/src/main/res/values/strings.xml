@@ -18,4 +18,5 @@
     <string name="empty_string" />
     <string name="issues">Issues:</string>
     <string name="days_ago">Days Ago:</string>
+    <string name="currently_there_is_no_inspections_happened_in_this_restaurant">Currently there is no inspections happends in this restaurant</string>
 </resources>
