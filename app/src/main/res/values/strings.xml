@@ -19,4 +19,17 @@
     <string name="issues">Issues:</string>
     <string name="days_ago">Days Ago:</string>
     <string name="currently_there_is_no_inspections_happened_in_this_restaurant">Currently there is no inspections happends in this restaurant</string>
+
+    <string name="number_of_critical">%1$d</string>
+    <string name="number_of_non_critical">%1$d</string>
+    <string name="hazard_rating">%1$s</string>
+    <string name="violation_id">%1$d</string>
+    <string name="brief_desc">%1$s</string>
+    <string name="inspection_type">%1$s</string>
+    <string name="hazard_rating_view">Hazard Rating: </string>
+    <string name="inspection_date_view">Inspection Date: </string>
+    <string name="inspection_type_view">Inspection Type: </string>
+    <string name="num_critical_issues_view">Number of Critical Issues Found: </string>
+    <string name="num_non_critical_issues_view">Number of Non-Critical Issues Found: </string>
+
 </resources>

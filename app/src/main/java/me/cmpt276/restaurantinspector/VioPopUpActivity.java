@@ -50,7 +50,7 @@ public class VioPopUpActivity extends AppCompatActivity {
         description.setText(FULL_DESCRIPTION);
 
         TextView id = findViewById(R.id.violation_id);
-        id.setText("" + VIOLATION_ID);
+        id.setText(getString(R.string.violation_id, VIOLATION_ID));
     }
 
     private void setUpOKButton() {

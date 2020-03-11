@@ -30,9 +30,9 @@
         android:layout_marginTop="17dp"
         android:layout_toEndOf="@+id/violation_type_view"
         android:layout_toRightOf="@+id/violation_type_view"
-        android:text="VIOLATION_ID"
+        android:text="@string/violation_id"
         android:textColor="@color/BLACK"
-        android:textSize="14dp"
+        android:textSize="14sp"
         android:textStyle="bold" />
 
     <TextView
@@ -45,9 +45,9 @@
         android:layout_marginTop="17dp"
         android:layout_toEndOf="@+id/violation_id_view"
         android:layout_toRightOf="@+id/violation_id_view"
-        android:text="BRIEF_DESC"
+        android:text="@string/brief_desc"
         android:textColor="@color/BLACK"
-        android:textSize="14dp"
+        android:textSize="14sp"
         android:textStyle="bold" />
 
     <ImageView
