@@ -21,9 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.cmpt276.restaurantinspector.Model.Inspection;
-import me.cmpt276.restaurantinspector.Model.Restaurant;
 import me.cmpt276.restaurantinspector.Model.Violation;
-import me.cmpt276.restaurantinspector.Model.RestaurantManager;
 
 public class InspectionActivity extends AppCompatActivity {
 
@@ -32,18 +30,7 @@ public class InspectionActivity extends AppCompatActivity {
     private String sentString = "full_description";
     private String sentInteger = "violation_id";
 
-    private String receivedRestaurantID = "";
-    private String restaurantID = "SWOD-AHZUMF";
-
-    private String receivedInspectionIndex = "";
-    private int inspectionIndex = 7;
-
-    private RestaurantManager restaurantManager = RestaurantManager.getInstance();
-    private Restaurant restaurant;
-
-    List<Inspection> inspections = new ArrayList<Inspection>();
-
-    static Inspection inspect;
+    static Inspection inspection;
 
 
     @Override
@@ -56,58 +43,44 @@ public class InspectionActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //fill_information();
-
         populateViolationList();
         populateViolationListView();
 
         registerClickCallBack();
     }
 
-//    private void fill_information(){
-//        Intent intent = getIntent();
-//        //restaurantID = intent.getStringExtra(receivedRestaurantID);
-//        restaurant = restaurantManager.getRestaurantByTrackingNumber(restaurantID);
-//
-//        //inspectionIndex = intent.getIntExtra(receivedInspectionIndex,0);
-//        inspections = restaurant.getInspections();
-//
-//    }
-
     private void populateViolationList() {
-        //Inspection inspection = inspections.get(inspectionIndex);
+        violations = inspection.getViolations();
 
-        violations = inspect.getViolations();
+        TextView dateView = findViewById(R.id.inspection_date);
+        dateView.setText(inspection.getFullInspectionDate());
 
-        TextView dateView = (TextView) findViewById(R.id.inspection_date);
-        dateView.setText(inspect.getFullInspectionDate());
+        TextView typeView = findViewById(R.id.inspection_type);
+        typeView.setText(inspection.getInspectionType());
 
-        TextView typeView = (TextView) findViewById(R.id.inspection_type);
-        typeView.setText(inspect.getInspectionType());
+        TextView critView = findViewById(R.id.crit_count);
+        critView.setText("" + inspection.getNumCritical());
 
-        TextView critView = (TextView) findViewById(R.id.crit_count);
-        critView.setText("" + inspect.getNumCritical());
+        TextView nonCritView = findViewById(R.id.non_crit_count);
+        nonCritView.setText("" + inspection.getNumNonCritical());
 
-        TextView nonCritView = (TextView) findViewById(R.id.non_crit_count);
-        nonCritView.setText("" + inspect.getNumNonCritical());
+        TextView hazardView = findViewById(R.id.hazard_rating);
+        hazardView.setText(inspection.getHazardRating());
 
-        TextView hazardView = (TextView) findViewById(R.id.hazard_rating);
-        hazardView.setText(inspect.getHazardRating());
-
-        ImageView hazardLevel = (ImageView) findViewById(R.id.hazard_icon);
+        ImageView hazardLevel = findViewById(R.id.hazard_icon);
 
         Resources res = getApplicationContext().getResources();
         hazardLevel.setImageResource(R.drawable.hazard);
 
-        if(inspect.getHazardRating().equals("Low")) {
+        if(inspection.getHazardRating().equals("Low")) {
             int color = res.getColor(R.color.green);
             hazardLevel.setColorFilter(color);
         }
-        else if(inspect.getHazardRating().equals("Moderate")) {
-            int color = res.getColor(R.color.yellow);
+        else if(inspection.getHazardRating().equals("Moderate")) {
+            int color = res.getColor(R.color.ORANGE);
             hazardLevel.setColorFilter(color);
         }
-        else if(inspect.getHazardRating().equals("High")) {
+        else if(inspection.getHazardRating().equals("High")) {
             int color = res.getColor(R.color.red);
             hazardLevel.setColorFilter(color);
         }
@@ -115,7 +88,7 @@ public class InspectionActivity extends AppCompatActivity {
 
     private void populateViolationListView() {
         ArrayAdapter<Violation> adapter = new customAdapter();
-        ListView list = (ListView) findViewById(R.id.violation_list);
+        ListView list = findViewById(R.id.violation_list);
         list.setAdapter(adapter);
     }
 
@@ -133,25 +106,48 @@ public class InspectionActivity extends AppCompatActivity {
 
             Violation currentViolation = violations.get(position);
 
-            ImageView imageView = (ImageView) itemView.findViewById(R.id.hazard_view);
-
+            ImageView imageView = itemView.findViewById(R.id.hazard_view);
             Resources res = getApplicationContext().getResources();
-
+            int color = 0;
             if(currentViolation.getCriticality().equals("Critical")) {
                 imageView.setImageResource(R.drawable.critical);
-                int color = res.getColor(R.color.red);
+                color = res.getColor(R.color.red);
                 imageView.setColorFilter(color);
             }
             else{
                 imageView.setImageResource(R.drawable.non_critical);
-                int color = res.getColor(R.color.yellow);
+                color = res.getColor(R.color.ORANGE);
                 imageView.setColorFilter(color);
             }
 
-            TextView idText = (TextView) itemView.findViewById(R.id.violation_id_view);
+            ImageView type_view = itemView.findViewById(R.id.violation_type_view);
+            int id = currentViolation.getId();
+            color = res.getColor(R.color.BLACK);
+            if(id == 304 || id == 305) {
+                type_view.setImageResource(R.drawable.pest);
+                type_view.setColorFilter(color);
+            }
+            else if(id >= 301 && id <= 311 && id != 304 && id != 305 || id == 315) {
+                type_view.setImageResource(R.drawable.equipment);
+                type_view.setColorFilter(color);
+            }
+            else if(id >= 201 && id <= 212 && id != 207){
+                type_view.setImageResource(R.drawable.food);
+                type_view.setColorFilter(color);
+            }
+            else if(id >= 101 && id <= 104){
+                type_view.setImageResource(R.drawable.building);
+                type_view.setColorFilter(color);
+            }
+            else if(id == 314 || id >= 401 && id <= 403){
+                type_view.setImageResource(R.drawable.sanitization);
+                type_view.setColorFilter(color);
+            }
+
+            TextView idText = itemView.findViewById(R.id.violation_id_view);
             idText.setText("" + currentViolation.getId());
 
-            TextView briefText = (TextView) itemView.findViewById(R.id.brief_desc_view);
+            TextView briefText = itemView.findViewById(R.id.brief_desc_view);
             briefText.setText(currentViolation.getBriefDescription());
 
             return itemView;
@@ -159,7 +155,7 @@ public class InspectionActivity extends AppCompatActivity {
     }
 
     public static Intent makeIntent(Context context, Inspection inspection){
-        inspect = inspection;
+        InspectionActivity.inspection = inspection;
         return new Intent(context, InspectionActivity.class);
     }
 
@@ -175,7 +171,7 @@ public class InspectionActivity extends AppCompatActivity {
     }
 
     private void registerClickCallBack() {
-        ListView list = (ListView) findViewById(R.id.violation_list);
+        ListView list = findViewById(R.id.violation_list);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
