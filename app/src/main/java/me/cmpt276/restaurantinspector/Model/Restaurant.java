@@ -8,6 +8,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ *  stores restaurant's attributes
+ */
+
 public class Restaurant {
     private String trackingNumber;
     private String name;
@@ -50,10 +54,6 @@ public class Restaurant {
         this.city = city;
     }
 
-    public String getFacilityType() {
-        return facilityType;
-    }
-
     public void setFacilityType(String facilityType) {
         this.facilityType = facilityType;
     }
@@ -79,17 +79,13 @@ public class Restaurant {
     }
 
     public boolean hasInspections() {
-        if (inspections.size() == 0) {
-            return false;
-        }
-        return true;
+        return inspections.size() != 0;
     }
 
     public void addInspection(Inspection inspection) {
         inspections.add(inspection);
     }
 
-    // Referenced from: https://www.youtube.com/watch?v=DYNWCUMdWfE
     public void sortInspectionDates() {
         final DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Collections.sort(inspections, new Comparator<Inspection>() {

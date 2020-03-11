@@ -4,6 +4,10 @@ import java.text.DateFormatSymbols;
 import java.util.Date;
 import java.util.Calendar;
 
+/**
+ *  implements methods related to time computations
+ */
+
 public class Time {
     private static final int NUM_MILLISECONDS_IN_DAY = 86400000;
     private static final int MONTH_START_INDEX = 4;
@@ -22,11 +26,9 @@ public class Time {
         int day = Integer.parseInt(dateString.substring(DAY_START_INDEX, DAY_END_INDEX));
         dateCalendar.set(year, month - 1, day);
         Date date = dateCalendar.getTime();
-        long difference = (today.getTime() - date.getTime()) / NUM_MILLISECONDS_IN_DAY; 
-        return difference;
+        return (today.getTime() - date.getTime()) / NUM_MILLISECONDS_IN_DAY;
     }
 
-    // Referenced from: https://stackoverflow.com/questions/14832151/how-to-get-month-name-from-calendar
     public static String getMonthFromNumber(int monthNumber) {
         if (monthNumber < 1 || monthNumber > 12) {
             return null;

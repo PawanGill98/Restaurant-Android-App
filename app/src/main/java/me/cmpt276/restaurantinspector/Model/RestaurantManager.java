@@ -6,12 +6,14 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ *  stores list of restaurant
+ */
+
 public class RestaurantManager implements Iterable<Restaurant> {
-    // Singleton design
     private static RestaurantManager instance;
 
     private RestaurantManager() {
-        // Prevent others from instantiating
     }
 
     public static RestaurantManager getInstance() {
@@ -32,15 +34,6 @@ public class RestaurantManager implements Iterable<Restaurant> {
         });
     }
 
-    public Restaurant getRestaurantByTrackingNumber(String trackingNumber) {
-        for (Restaurant restaurant : restaurants) {
-            if (restaurant.getTrackingNumber().equals(trackingNumber)) {
-                return restaurant;
-            }
-        }
-        return null;
-    }
-
     public Restaurant getRestaurantByIndex(int index) {
         return restaurants.get(index);
     }
@@ -59,10 +52,6 @@ public class RestaurantManager implements Iterable<Restaurant> {
 
     public List<Restaurant> getRestaurants() {
         return restaurants;
-    }
-
-    public void remove(int index) {
-        restaurants.remove(index);
     }
 
     @Override

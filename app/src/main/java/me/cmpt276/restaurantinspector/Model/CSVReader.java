@@ -10,6 +10,9 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Read data from csv files and stores in data structure
+ */
 public class CSVReader {
     private static final int DESCRIPTION_START_INDEX = 4;
     public static final int BRIEF_DESC_FIRST_ATTRIBUTE = 0;
@@ -24,11 +27,9 @@ public class CSVReader {
 
         String line = "";
         try {
-            // Step over headers
             reader.readLine();
 
             while ((line = reader.readLine()) != null) {
-                // Split by ','
                 String[] tokens = line.split(",");
 
                 int index = 0;
@@ -36,11 +37,9 @@ public class CSVReader {
                 restaurant.setTrackingNumber(tokens[index++].replace("\"", ""));
                 String restaurantName = tokens[index++];
 
-                // If name is surrounded by quotes
                 if (restaurantName.startsWith("\"")) {
                     int nameIndex = index;
 
-                    // Check for existing commas within name
                     while (!tokens[nameIndex].contains("\"")) {
                         restaurantName = restaurantName + "," + tokens[nameIndex];
                         nameIndex++;
@@ -58,7 +57,6 @@ public class CSVReader {
                 restaurant.setLatitude(Double.parseDouble(tokens[index++]));
                 restaurant.setLongitude(Double.parseDouble(tokens[index]));
 
-                // Add restaurant to list of restaurants
                 restaurantManager.addRestaurant(restaurant);
             }
             restaurantManager.sortRestaurantNames();
@@ -77,16 +75,13 @@ public class CSVReader {
 
         String line = "";
         try {
-            // Step over headers
             reader.readLine();
 
             while ((line = reader.readLine()) != null) {
-                // Split by ',' and '|'
                 String[] tokens = line.split(",|\\|");
 
                 int index = 0;
 
-                // Read the data (excluding quotes for strings)
                 Inspection inspection = new Inspection();
                 inspection.setTrackingNumber(tokens[index++].replace("\"", ""));
                 inspection.setInspectionDate(tokens[index++].replace("\"", ""));
@@ -100,10 +95,8 @@ public class CSVReader {
                 inspection.setFullInspectionDate(inspection.getInspectionDate());
                 inspection.setHowLongAgo((int) daysSinceInspection);
 
-                // Check for empty violation lump
                 if (!isColumnEmpty(tokens, index)) {
 
-                    // Add all violations to inspection data
                     int count = index;
                     do {
                         Violation violation = new Violation();
@@ -120,7 +113,6 @@ public class CSVReader {
                     } while (tokens.length >= count+1 && tokens[count].length() > 0);
                 }
 
-                // Add inspection to matching restaurant
                 restaurantManager.addInspectionToRestaurant(inspection);
 
                 for (Restaurant restaurant : restaurantManager.getRestaurants()) {
@@ -154,9 +146,6 @@ public class CSVReader {
     }
 
     private static boolean isColumnEmpty(String[] tokens, int col) {
-        if (tokens.length > col+1 && tokens[col].length() > 0) {
-            return false;
-        }
-        return true;
+        return tokens.length <= col + 1 || tokens[col].length() <= 0;
     }
 }

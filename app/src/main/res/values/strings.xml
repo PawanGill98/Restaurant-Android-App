@@ -11,5 +11,11 @@
     <string name="number_critical_issues">%1$d critical issues found</string>
     <string name="number_non_critical_issues">%1$d non-critical issues found</string>
     <string name="date">date</string>
-    <string name="no_violations_found_this_palce_is_safe_to_visit">No violations found! This place is safe to visit.</string>
+    <string name="no_violations_found_this_place_is_safe_to_visit">No violations found! This place is safe to visit.</string>
+    <string name="total_issues">Issues: %1$d</string>
+    <string name="current_restaurant_date">%1$s</string>
+    <string name="no_inspections">There are no inspections yet</string>
+    <string name="empty_string" />
+    <string name="issues">Issues:</string>
+    <string name="days_ago">Days Ago:</string>
 </resources>

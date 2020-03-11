@@ -3,6 +3,10 @@ package me.cmpt276.restaurantinspector.Model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * stores the restaurant's inspection
+ */
+
 public class Inspection {
     private static final int MONTH_START_INDEX = 4;
     private static final int MONTH_END_INDEX = 6;
@@ -58,10 +62,6 @@ public class Inspection {
         this.fullInspectionDate = month + " " + day + ", " + year;
     }
 
-    public int getDaysSinceInspection() {
-        return daysSinceInspection;
-    }
-
     public void setDaysSinceInspection(int daysSinceInspection) {
         this.daysSinceInspection = daysSinceInspection;
     }
@@ -72,10 +72,6 @@ public class Inspection {
 
     public List<Violation> getViolations() {
         return violations;
-    }
-
-    public void setViolations(List<Violation> violations) {
-        this.violations = violations;
     }
 
     public String getTrackingNumber() {

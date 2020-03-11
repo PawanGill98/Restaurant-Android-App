@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Action Bar
         getSupportActionBar().setTitle("List of Restaurants");
         restaurantManager = RestaurantManager.getInstance();
 
@@ -41,33 +40,11 @@ public class MainActivity extends AppCompatActivity {
 
         myRestaurants = restaurantManager.getRestaurants();
         populateListView();
-        /*
-        // Iterate through all restaurants
-        for (Restaurant restaurant : restaurantManager.getRestaurants()) {
-            Log.d("Restaurants list: ", restaurant + "");
-        }
-
-        // Get restaurant by tracking number. Can also get by index using getRestaurantByIndex(int);
-        Restaurant restaurant = restaurantManager.getRestaurantByTrackingNumber("SDFO-8HKP7E");
-        Log.d("Individual restaurant: ", restaurant + "");
-
-        // List of inspections from restaurant above
-        List<Inspection> inspections = restaurant.getInspections();
-        for (Inspection inspection : inspections) {
-            Log.d("Inspections list: ", inspection + "");
-
-            // List of violations from inspection above
-            List<Violation> violations = inspection.getViolations();
-            for (Violation violation : violations) {
-                Log.d("Violations list: ", violation + "");
-            }
-        }
-        */
     }
 
     private void populateListView() {
         ArrayAdapter<Restaurant> adapter = new MyListAdapter();
-        ListView listView = (ListView) findViewById(R.id.restaurantListView);
+        ListView listView = findViewById(R.id.restaurantListView);
         listView.setAdapter(adapter);
         registerClickCallBack();
     }
@@ -85,54 +62,43 @@ public class MainActivity extends AppCompatActivity {
             }
             Restaurant currentRestaurant = myRestaurants.get(position);
 
-            //Restaurant Name
             TextView restaurantName = itemView.findViewById(R.id.item_restaurantName);
             restaurantName.setText(currentRestaurant.getName());
-            //Restaurant Icon
-            //ImageView restaurantIcon = (ImageView) itemView.findViewById(R.id.item_restaurantIcon);
-            //restaurantIcon.setImageResource(currentRestaurant.getRestaurantIconID());
 
             if(currentRestaurant.hasInspections()){
-                //Hazard Icon Colour
-                Resources res = getContext().getResources();
-                ImageView hazardIcon = (ImageView) itemView.findViewById(R.id.item_hazardIcon);
-                if(currentRestaurant.getInspections().get(0).getHazardRating().equals("Low")) {
-                    hazardIcon.setImageDrawable(getResources().getDrawable(R.drawable.low));
-                    int newColor = res.getColor(R.color.colorPrimary);
-                    hazardIcon.setColorFilter(newColor, PorterDuff.Mode.SRC_ATOP);
-                }
-                else if(currentRestaurant.getInspections().get(0).getHazardRating().equals("Moderate")) {
-                    hazardIcon.setImageDrawable(getResources().getDrawable(R.drawable.moderate));
-                    int newColor = res.getColor(R.color.yellow);
-                    hazardIcon.setColorFilter(newColor, PorterDuff.Mode.SRC_ATOP);
-                }
-                else if(currentRestaurant.getInspections().get(0).getHazardRating().equals("High")) {
-                    hazardIcon.setImageDrawable(getResources().getDrawable(R.drawable.high));
-                    int newColor = res.getColor(R.color.red);
-                    hazardIcon.setColorFilter(newColor, PorterDuff.Mode.SRC_ATOP);
+                ImageView hazardIcon = itemView.findViewById(R.id.item_hazardIcon);
+                switch (currentRestaurant.getInspections().get(0).getHazardRating()) {
+                    case "Low":
+                        hazardIcon.setImageDrawable(getResources().getDrawable(R.drawable.green_acceptance_sign_icon));
+                        break;
+                    case "Moderate":
+                        hazardIcon.setImageDrawable(getResources().getDrawable(R.drawable.orange_exlamation_mark_sign_icon));
+                        break;
+                    case "High":
+                        hazardIcon.setImageDrawable(getResources().getDrawable(R.drawable.red_cross_sign_icon));
+                        break;
                 }
 
-                //Issues
                 int totalIssues = currentRestaurant.getInspections().get(0).getNumNonCritical()
                         + currentRestaurant.getInspections().get(0).getNumCritical();
-                TextView issues = (TextView) itemView.findViewById(R.id.item_issues);
-                issues.setText("Issues: " + totalIssues);
-                //Date
-                TextView date = (TextView) itemView.findViewById(R.id.item_date);
-                date.setText("" + currentRestaurant.getInspections().get(0).getHowLongAgo());
+                TextView issues = itemView.findViewById(R.id.item_issues);
+                issues.setText(getString(R.string.total_issues, totalIssues));
+                TextView date = itemView.findViewById(R.id.item_date);
+                date.setText(getString(R.string.current_restaurant_date,
+                        currentRestaurant.getInspections().get(0).getHowLongAgo()));
+                parent.setBackgroundColor(getResources().getColor(R.color.beige));
+
             }
             else {
-                //Hazard Icon Colour
                 Resources res = getContext().getResources();
-                ImageView hazardIcon = (ImageView) itemView.findViewById(R.id.item_hazardIcon);
-                int newColor = res.getColor(R.color.grey);
+                ImageView hazardIcon = itemView.findViewById(R.id.item_hazardIcon);
+                int newColor = res.getColor(R.color.blue);
                 hazardIcon.setColorFilter(newColor, PorterDuff.Mode.SRC_ATOP);
-                //Issues;
-                TextView issues = (TextView) itemView.findViewById(R.id.item_issues);
-                issues.setText("No Inspections at this Time");
-                //                //Date
-                TextView date = (TextView) itemView.findViewById(R.id.item_date);
-                date.setText("");
+                TextView issues = itemView.findViewById(R.id.item_issues);
+                issues.setText(getString(R.string.no_inspections));
+
+                TextView date = itemView.findViewById(R.id.item_date);
+                date.setText(getString(R.string.empty_string));
             }
             return itemView;
         }

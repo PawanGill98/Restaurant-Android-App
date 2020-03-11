@@ -1,5 +1,9 @@
 package me.cmpt276.restaurantinspector.Model;
 
+/**
+ *  stores inspection's violation
+ */
+
 public class Violation {
     private int id;
     private String criticality;
@@ -37,10 +41,6 @@ public class Violation {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getRepeatability() {
-        return repeatability;
     }
 
     public void setRepeatability(String repeatability) {

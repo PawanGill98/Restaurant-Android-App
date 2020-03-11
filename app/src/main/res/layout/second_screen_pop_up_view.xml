@@ -20,7 +20,7 @@
         android:layout_marginTop="9dp"
         android:layout_marginEnd="24dp"
         android:layout_marginRight="24dp"
-        android:text="@string/no_violations_found_this_palce_is_safe_to_visit"
+        android:text="@string/no_violations_found_this_place_is_safe_to_visit"
         android:textColor="@android:color/background_dark"
         android:textSize="18sp" />
 
