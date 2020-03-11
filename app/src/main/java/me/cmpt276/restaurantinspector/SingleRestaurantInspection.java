@@ -110,13 +110,13 @@ public class SingleRestaurantInspection extends AppCompatActivity {
         int id;
         switch (hazard) {
             case "Low":
-                id = R.drawable.hazard_sign_green_circle_icon;
+                id = R.drawable.green_acceptance_sign_icon;
                 break;
             case "Moderate":
-                id = R.drawable.hazard_sigh_orange_circle_icon;
+                id = R.drawable.orange_exlamation_mark_sign_icon;
                 break;
             case "High":
-                id = R.drawable.hazard_sigh_red_circle_icon;
+                id = R.drawable.red_cross_sign_icon;
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + hazard);
