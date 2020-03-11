@@ -14,7 +14,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="1dp"
+        android:layout_marginTop="0dp"
         android:adjustViewBounds="true"
         android:maxWidth="50dp"
         android:maxHeight="50dp"
@@ -27,13 +27,13 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="17dp"
-        android:layout_toEndOf="@+id/violation_type_view"
-        android:layout_toRightOf="@+id/violation_type_view"
-        android:text="VIOLATION_ID"
+        android:layout_marginTop="16dp"
+        android:textStyle="bold"
         android:textColor="@color/BLACK"
         android:textSize="14dp"
-        android:textStyle="bold" />
+        android:layout_toEndOf="@+id/hazard_view"
+        android:layout_toRightOf="@+id/hazard_view"
+        android:text="VIOLATION_ID" />
 
     <TextView
         android:id="@+id/brief_desc_view"
@@ -42,25 +42,11 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="17dp"
-        android:layout_toEndOf="@+id/violation_id_view"
-        android:layout_toRightOf="@+id/violation_id_view"
-        android:text="BRIEF_DESC"
+        android:layout_marginTop="16dp"
+        android:textStyle="bold"
         android:textColor="@color/BLACK"
         android:textSize="14dp"
-        android:textStyle="bold" />
-
-    <ImageView
-        android:id="@+id/violation_type_view"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="1dp"
-        android:layout_toEndOf="@+id/hazard_view"
-        android:layout_toRightOf="@+id/hazard_view"
-        android:maxWidth="50dp"
-        android:maxHeight="50dp"
-        app:srcCompat="@drawable/critical" />
+        android:layout_toEndOf="@+id/violation_id_view"
+        android:layout_toRightOf="@+id/violation_id_view"
+        android:text="BRIEF_DESC" />
 </RelativeLayout>
