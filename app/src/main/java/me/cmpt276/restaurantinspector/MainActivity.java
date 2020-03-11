@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Action Bar
         getSupportActionBar().setTitle("List of Restaurants");
-        restaurantManager = restaurantManager.getInstance();
+        restaurantManager = RestaurantManager.getInstance();
 
         CSVReader.readRestaurantData(getResources().openRawResource(R.raw.restaurants_itr1));
         CSVReader.readInspectionReportData(getResources().openRawResource(R.raw.inspectionreports_itr1),
@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
                 //Issues;
                 TextView issues = (TextView) itemView.findViewById(R.id.item_issues);
                 issues.setText("No Inspections at this Time");
-                //Date
+                //                //Date
                 TextView date = (TextView) itemView.findViewById(R.id.item_date);
                 date.setText("");
             }

@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -55,10 +56,10 @@ public class SingleRestaurantInspection extends AppCompatActivity {
     private void setupTextView() {
         TextView view = findViewById(R.id.screen2_restaurant_name);
         view.setText(restaurant.getName());
-        TextView view2 = findViewById(R.id.screen2_restaurant_address);
-        view2.setText(getString(R.string.address_city, restaurant.getAddress(), restaurant.getCity()));
-        TextView view3 = findViewById(R.id.screen2_gps_coords);
-        view3.setText(getString(R.string.latitude_longitude, restaurant.getLatitude(), restaurant.getLongitude()));
+        view = findViewById(R.id.screen2_restaurant_address);
+        view.setText(getString(R.string.address_city, restaurant.getAddress(), restaurant.getCity()));
+        view = findViewById(R.id.screen2_gps_coords);
+        view.setText(getString(R.string.latitude_longitude, restaurant.getLatitude(), restaurant.getLongitude()));
     }
 
 
@@ -75,7 +76,7 @@ public class SingleRestaurantInspection extends AppCompatActivity {
 
     private class MyListAdapter extends ArrayAdapter<Inspection> {
         public MyListAdapter() {
-            super(SingleRestaurantInspection.this, R.layout.item_view, restaurant.getInspections());
+            super(SingleRestaurantInspection.this, R.layout.inspection_view, restaurant.getInspections());
         }
 
         @NonNull
@@ -83,7 +84,7 @@ public class SingleRestaurantInspection extends AppCompatActivity {
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             View itemView = convertView;
             if (itemView == null) {
-                itemView = getLayoutInflater().inflate(R.layout.item_view, parent, false);
+                itemView = getLayoutInflater().inflate(R.layout.inspection_view, parent, false);
             }
 
             ImageView imageView = itemView.findViewById(R.id.screen2_hazard_sign);
@@ -93,8 +94,13 @@ public class SingleRestaurantInspection extends AppCompatActivity {
             TextView view = itemView.findViewById(R.id.screen2_critical_issue);
             view.setText(getString(R.string.number_critical_issues,
                     restaurant.getInspections().get(position).getNumCritical()));
+            view = itemView.findViewById(R.id.screen2_non_critical_issue);
+            view.setText(getString(R.string.number_non_critical_issues,
+                    restaurant.getInspections().get(position).getNumNonCritical()));
+            view = itemView.findViewById(R.id.screen2_inspection_date);
+            view.setText(restaurant.getInspections().get(position).getHowLongAgo());
 
-
+            parent.setBackgroundColor(getResources().getColor(R.color.beige));
             return itemView;
         }
     }
@@ -104,13 +110,13 @@ public class SingleRestaurantInspection extends AppCompatActivity {
         int id;
         switch (hazard) {
             case "Low":
-                id = R.drawable.warning_green;
+                id = R.drawable.hazard_sign_green_circle_icon;
                 break;
             case "Moderate":
-                id = R.drawable.warning_yellow;
+                id = R.drawable.hazard_sigh_orange_circle_icon;
                 break;
             case "High":
-                id = R.drawable.warning_red;
+                id = R.drawable.hazard_sigh_red_circle_icon;
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + hazard);

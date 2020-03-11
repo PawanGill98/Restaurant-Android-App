@@ -23,7 +23,7 @@ public class Time {
         dateCalendar.set(year, month - 1, day);
         Date date = dateCalendar.getTime();
         long difference = (today.getTime() - date.getTime()) / NUM_MILLISECONDS_IN_DAY; 
-        return Math.abs(difference);
+        return difference;
     }
 
     // Referenced from: https://stackoverflow.com/questions/14832151/how-to-get-month-name-from-calendar
