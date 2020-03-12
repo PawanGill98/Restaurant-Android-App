@@ -1,11 +1,11 @@
-package me.cmpt276.restaurantinspector;
+package me.cmpt276.restaurantinspector.UI;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,25 +21,27 @@ import java.util.List;
 
 import me.cmpt276.restaurantinspector.Model.Inspection;
 import me.cmpt276.restaurantinspector.Model.Violation;
+import me.cmpt276.restaurantinspector.R;
 
+/**
+ *  Displays all violations of a single inspection on third screen
+ */
 public class InspectionActivity extends AppCompatActivity {
 
-    private List<Violation> violations = new ArrayList<Violation>();
+    private List<Violation> violations = new ArrayList<>();
 
     private String sentString = "full_description";
     private String sentInteger = "violation_id";
 
-    static Inspection inspection;
-
+    private static Inspection inspection;
+    private static String restaurantName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inspection);
 
-        //Back Button
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setupToolBar();
 
         populateViolationList();
         populateViolationListView();
@@ -47,11 +49,18 @@ public class InspectionActivity extends AppCompatActivity {
         registerClickCallBack();
     }
 
+    private void setupToolBar() {
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.green2)));
+        getSupportActionBar().setTitle(restaurantName);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
     private void populateViolationList() {
         violations = inspection.getViolations();
 
         TextView dateView = findViewById(R.id.inspection_date);
-        dateView.setText(getString(R.string.hazard_rating, inspection.getHazardRating()));
+        dateView.setText(getString(R.string.hazard_rating, inspection.getFullInspectionDate()));
 
         TextView typeView = findViewById(R.id.inspection_type);
         typeView.setText(getString(R.string.inspection_type, inspection.getInspectionType()));
@@ -115,7 +124,7 @@ public class InspectionActivity extends AppCompatActivity {
             if(id == 304 || id == 305) {
                 type_view.setImageResource(R.drawable.pest);
             }
-            else if(id >= 301 && id <= 311 && id != 304 && id != 305 || id == 315) {
+            else if(id >= 301 && id <= 311 || id == 315) {
                 type_view.setImageResource(R.drawable.equipment);
             }
             else if(id >= 201 && id <= 212 && id != 207){
@@ -138,16 +147,15 @@ public class InspectionActivity extends AppCompatActivity {
         }
     }
 
-    public static Intent makeIntent(Context context, Inspection inspection){
+    public static Intent makeIntent(Context context, Inspection inspection, String restaurantName){
         InspectionActivity.inspection = inspection;
+        InspectionActivity.restaurantName = restaurantName;
         return new Intent(context, InspectionActivity.class);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == android.R.id.home) {
+        if (item.getItemId() == android.R.id.home) {
             this.finish();
         }
 

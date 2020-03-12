@@ -1,4 +1,4 @@
-package me.cmpt276.restaurantinspector;
+package me.cmpt276.restaurantinspector.UI;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,7 +12,11 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
+import me.cmpt276.restaurantinspector.R;
+
+/**
+ *  Display alert dialog to show full description of violation
+ */
 
 public class VioPopUpActivity extends AppCompatActivity {
 

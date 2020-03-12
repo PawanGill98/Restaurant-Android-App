@@ -1,4 +1,4 @@
-package me.cmpt276.restaurantinspector;
+package me.cmpt276.restaurantinspector.UI;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentManager;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,13 +15,17 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
 import me.cmpt276.restaurantinspector.Model.CSVReader;
 import me.cmpt276.restaurantinspector.Model.Restaurant;
 import me.cmpt276.restaurantinspector.Model.RestaurantManager;
+import me.cmpt276.restaurantinspector.R;
+
+/**
+ *  Displays list of restaurants on first screen
+ */
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,8 +36,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        getSupportActionBar().setTitle("List of Restaurants");
+        setupToolBar();
         restaurantManager = RestaurantManager.getInstance();
 
         CSVReader.readRestaurantData(getResources().openRawResource(R.raw.restaurants_itr1));
@@ -41,6 +45,11 @@ public class MainActivity extends AppCompatActivity {
 
         myRestaurants = restaurantManager.getRestaurants();
         populateListView();
+    }
+
+    private void setupToolBar() {
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.green2)));
+        getSupportActionBar().setTitle(getString(R.string.list_of_restaurants));
     }
 
     private void populateListView() {

@@ -1,14 +1,12 @@
-package me.cmpt276.restaurantinspector;
+package me.cmpt276.restaurantinspector.UI;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -19,10 +17,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import me.cmpt276.restaurantinspector.Model.Inspection;
 import me.cmpt276.restaurantinspector.Model.Restaurant;
+import me.cmpt276.restaurantinspector.R;
+
+/**
+ *  Display all inspections for single restaurant on second screen
+ */
 
 public class SingleRestaurantInspection extends AppCompatActivity {
 
@@ -40,7 +42,7 @@ public class SingleRestaurantInspection extends AppCompatActivity {
     }
 
     private void setupToolbar() {
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.colorAccent)));
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.green2)));
         getSupportActionBar().setTitle(restaurant.getName());
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -136,7 +138,8 @@ public class SingleRestaurantInspection extends AppCompatActivity {
                     SecondScreenPopUpFragment dialog = new SecondScreenPopUpFragment();
                     dialog.show(manager, "Inspection without violations");
                 }else {
-                    Intent intent = InspectionActivity.makeIntent(SingleRestaurantInspection.this, restaurant.getInspections().get(position));
+                    Intent intent = InspectionActivity.makeIntent(SingleRestaurantInspection.this,
+                            restaurant.getInspections().get(position), restaurant.getName());
                     startActivity(intent);
                 }
             }
