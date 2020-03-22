@@ -31,5 +31,6 @@
     <string name="num_critical_issues_view">Number of Critical Issues Found: </string>
     <string name="num_non_critical_issues_view">Number of Non-Critical Issues Found: </string>
     <string name="list_of_restaurants">List of Restaurants</string>
+    <string name="title_activity_maps">Map</string>
 
 </resources>

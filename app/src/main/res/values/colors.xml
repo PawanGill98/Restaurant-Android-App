@@ -13,6 +13,7 @@
 
     <color name="BLACK">#000000</color>
     <color name="ORANGE">#FF9800</color>
+    <color name="WHITE">#FFF</color>
 
 
 </resources>
