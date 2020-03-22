@@ -51,6 +51,10 @@ public class MainActivity extends AppCompatActivity {
         myRestaurants = restaurantManager.getRestaurants();
         populateListView();
 
+        setUpBottomNavigation();
+    }
+
+    private void setUpBottomNavigation(){
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 
         bottomNavigationView.setSelectedItemId(R.id.restaurant_list);
@@ -62,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.restaurant_list:
                         return true;
                     case R.id.map:
-                        Intent intent = GoogleMapActivity.makeIntent(MainActivity.this);
+                        Intent intent = GoogleMapActivity.makeIntent(MainActivity.this, myRestaurants);
                         startActivity(intent);
                         overridePendingTransition(0,0);
                         return true;
@@ -70,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-
     }
 
     private void setupToolBar() {

@@ -22,16 +22,23 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.List;
+
+import me.cmpt276.restaurantinspector.Model.Restaurant;
+
 public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    public static Intent makeIntent(Context c){
+    public static Intent makeIntent(Context c, List<Restaurant> restaurants){
+        GoogleMapActivity.restaurants = restaurants;
         return new Intent(c, GoogleMapActivity.class);
     }
 
+    private static List<Restaurant> restaurants;
     private static final String TAG = "MainActivity";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
@@ -72,9 +79,22 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         mapFragment.getMapAsync(this);
     }
 
+    private void setAllRestaurantsLocations(){
+        for(int i = 0; i < restaurants.size(); i++){
+            final Location targetLocation = new Location("");
+            targetLocation.setLatitude(restaurants.get(i).getLatitude());
+            targetLocation.setLongitude(restaurants.get(i).getLongitude());
+            LatLng latLng = new LatLng(targetLocation.getLatitude(), targetLocation.getLongitude());
+            MarkerOptions options = new MarkerOptions()
+                    .position(latLng)
+                    .title(getString(R.string.restaurant_name_on_map, restaurants.get(i).getName()));
+            mMap.addMarker(options);
+        }
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
         mMap = googleMap;
 
         if(mLocationPermissionGranted){
@@ -87,11 +107,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
             }
             mMap.setMyLocationEnabled(true);
         }
-
-        // Add a marker in Sydney and move the camera
-//        LatLng sydney = new LatLng(-34, 151);
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
     private void getDeviceLocation(){
@@ -105,6 +120,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                         if(task.isSuccessful()){
                             Log.d(TAG, "onComplete: found location!");
                             Location currentLocation = (Location) task.getResult();
+                            setAllRestaurantsLocations();
                             moveCamera(new LatLng(currentLocation.getLatitude(),
                                     currentLocation.getLongitude()), DEFAULT_ZOOM);
                         }else{
