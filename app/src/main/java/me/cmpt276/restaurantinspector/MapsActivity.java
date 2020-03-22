@@ -6,6 +6,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -23,11 +25,25 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.util.Map;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+
+    public static Intent makeIntent(Context c, double latitude, double longitude
+            , String restaurantName){
+        MapsActivity.latitude = latitude;
+        MapsActivity.longitude = longitude;
+        MapsActivity.restaurantName = restaurantName;
+        return new Intent(c, MapsActivity.class);
+    }
+
+    private static double latitude;
+    private static double longitude;
+    private static String restaurantName;
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
         mMap = googleMap;
 
         if(mLocationPermissionGranted){
@@ -40,11 +56,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
             mMap.setMyLocationEnabled(true);
         }
-
-        // Add a marker in Sydney and move the camera
-//        LatLng sydney = new LatLng(-34, 151);
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
 
@@ -69,6 +80,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
+    private void getRestaurantLocation(){
+        final Location targetLocation = new Location("");
+        targetLocation.setLatitude(latitude);
+        targetLocation.setLongitude(longitude);
+        LatLng latLng = new LatLng(targetLocation.getLatitude(), targetLocation.getLongitude());
+        MarkerOptions options = new MarkerOptions()
+                .position(latLng)
+                .title(getString(R.string.restaurant_name_on_map, restaurantName));
+        mMap.addMarker(options);
+    }
+
     private void getDeviceLocation(){
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         try {
@@ -78,10 +100,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public void onComplete(@NonNull Task task) {
                         if(task.isSuccessful()){
-                            Log.d(TAG, "onComplete: found location!");
-                            Location currentLocation = (Location) task.getResult();
-                            moveCamera(new LatLng(currentLocation.getLatitude(),
-                                    currentLocation.getLongitude()), DEFAULT_ZOOM);
+//                            Log.d(TAG, "onComplete: found location!");
+//                            Location currentLocation = (Location) task.getResult();
+                            getRestaurantLocation();
+
+                            moveCamera(new LatLng(latitude, longitude), DEFAULT_ZOOM);
                         }else{
                             Log.d(TAG, "onComplete: current location is null");
                             Toast.makeText(MapsActivity.this,

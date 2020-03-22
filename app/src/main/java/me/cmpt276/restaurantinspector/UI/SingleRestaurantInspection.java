@@ -41,13 +41,17 @@ public class SingleRestaurantInspection extends AppCompatActivity {
         setupTextView();
         populateListView();
         registerClickCallBack();
+        setUpTextViewClick();
+    }
 
+    private void setUpTextViewClick(){
         TextView textView = findViewById(R.id.screen2_gps_coords);
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(SingleRestaurantInspection.this,
-                        MapsActivity.class));
+                Intent intent = MapsActivity.makeIntent(SingleRestaurantInspection.this,
+                        restaurant.getLatitude(), restaurant.getLongitude(), restaurant.getName());
+                startActivity(intent);
             }
         });
     }
