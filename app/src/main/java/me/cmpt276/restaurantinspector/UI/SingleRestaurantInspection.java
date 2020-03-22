@@ -14,10 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import me.cmpt276.restaurantinspector.MapsActivity;
 import me.cmpt276.restaurantinspector.Model.Inspection;
 import me.cmpt276.restaurantinspector.Model.Restaurant;
 import me.cmpt276.restaurantinspector.R;
@@ -39,6 +41,15 @@ public class SingleRestaurantInspection extends AppCompatActivity {
         setupTextView();
         populateListView();
         registerClickCallBack();
+
+        TextView textView = findViewById(R.id.screen2_gps_coords);
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SingleRestaurantInspection.this,
+                        MapsActivity.class));
+            }
+        });
     }
 
     private void setupToolbar() {

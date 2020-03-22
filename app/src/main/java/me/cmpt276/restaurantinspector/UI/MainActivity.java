@@ -1,5 +1,6 @@
 package me.cmpt276.restaurantinspector.UI;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
@@ -8,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -16,8 +18,11 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import java.util.List;
 
+import me.cmpt276.restaurantinspector.GoogleMapActivity;
 import me.cmpt276.restaurantinspector.Model.CSVReader;
 import me.cmpt276.restaurantinspector.Model.Restaurant;
 import me.cmpt276.restaurantinspector.Model.RestaurantManager;
@@ -45,6 +50,27 @@ public class MainActivity extends AppCompatActivity {
 
         myRestaurants = restaurantManager.getRestaurants();
         populateListView();
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+
+        bottomNavigationView.setSelectedItemId(R.id.restaurant_list);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.restaurant_list:
+                        return true;
+                    case R.id.map:
+                        Intent intent = GoogleMapActivity.makeIntent(MainActivity.this);
+                        startActivity(intent);
+                        overridePendingTransition(0,0);
+                        return true;
+                }
+                return false;
+            }
+        });
+
     }
 
     private void setupToolBar() {
