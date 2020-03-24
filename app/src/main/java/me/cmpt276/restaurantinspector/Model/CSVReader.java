@@ -34,6 +34,7 @@ public class CSVReader {
     private static RestaurantManager restaurantManager = RestaurantManager.getInstance();
 
     public static void readRestaurantData(FileInputStream fis) {
+        restaurantManager.clear();
         BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
         String line = "";
         try {
@@ -85,7 +86,6 @@ public class CSVReader {
         BufferedReader reader = new BufferedReader(
                 new InputStreamReader(is, Charset.forName("UTF-8"))
         );
-
         String line = "";
         try {
             reader.readLine();

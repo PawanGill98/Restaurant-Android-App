@@ -23,7 +23,12 @@ public class RestaurantManager implements Iterable<Restaurant> {
         return instance;
     }
 
+
     private List<Restaurant> restaurants = new ArrayList<>();
+
+    public void clear() {
+        restaurants.clear();
+    }
 
     public void sortRestaurantNames() {
         Collections.sort(restaurants, new Comparator<Restaurant>() {
