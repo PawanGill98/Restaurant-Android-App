@@ -396,7 +396,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         });
     }
 
-    private void setUpImageViewClick(final Restaurant restaurant){
+    private void setUpImageViewClick(){
         ImageView imageView = findViewById(R.id.place_info);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -406,18 +406,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                         mMarker.hideInfoWindow();
                     }else{
                         mMarker.showInfoWindow();
-                        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                            @Override
-                            public void onInfoWindowClick(Marker marker) {
-                                for(int i = 0; i < restaurants.size(); i++){
-                                    if(restaurants.get(i).getName().equals(restaurant.getName())){
-                                        Intent intent = SingleRestaurantInspection.makeIntent(GoogleMapActivity.this,
-                                                restaurant);
-                                        startActivity(intent);
-                                    }
-                                }
-                            }
-                        });
                     }
                 }catch(NullPointerException e){
                     Log.e(TAG, "onClick: NullPointerException: " + e.getMessage());
@@ -497,7 +485,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                         if(task.isSuccessful()){
                             Log.d(TAG, "onComplete: found location!");
                             Location currentLocation = (Location) task.getResult();
-
+                            setUpImageViewClick();
                             setAllRestaurantsLocations();
                             mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                                 @Override
@@ -506,12 +494,24 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                                         LatLng temp = new LatLng(restaurants.get(i).getLatitude()
                                                 ,restaurants.get(i).getLongitude());
                                         if(temp.equals(marker.getPosition())){
-                                            setUpImageViewClick(restaurants.get(i));
+
                                             setUpCustomWindowAdapter(marker.getPosition()
                                                     , DEFAULT_ZOOM
                                                     , restaurants.get(i));
                                         }
                                     }
+                                    mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                                        @Override
+                                        public void onInfoWindowClick(Marker marker) {
+                                            for(int i = 0; i < restaurants.size(); i++){
+                                                if(restaurants.get(i).getName().equals(marker.getTitle())){
+                                                    Intent intent = SingleRestaurantInspection.makeIntent(GoogleMapActivity.this,
+                                                            restaurants.get(i));
+                                                    startActivity(intent);
+                                                }
+                                            }
+                                        }
+                                    });
                                     return false;
                                 }
                             });
