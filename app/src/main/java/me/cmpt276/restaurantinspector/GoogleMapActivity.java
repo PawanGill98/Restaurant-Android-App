@@ -61,6 +61,7 @@ import me.cmpt276.restaurantinspector.Model.Restaurant;
 import me.cmpt276.restaurantinspector.Model.RestaurantManager;
 import me.cmpt276.restaurantinspector.Model.Time;
 import me.cmpt276.restaurantinspector.UI.MainActivity;
+import me.cmpt276.restaurantinspector.UI.SingleRestaurantInspection;
 
 public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -395,7 +396,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         });
     }
 
-    private void setUpImageViewClick(){
+    private void setUpImageViewClick(final Restaurant restaurant){
         ImageView imageView = findViewById(R.id.place_info);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -405,6 +406,18 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                         mMarker.hideInfoWindow();
                     }else{
                         mMarker.showInfoWindow();
+                        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                            @Override
+                            public void onInfoWindowClick(Marker marker) {
+                                for(int i = 0; i < restaurants.size(); i++){
+                                    if(restaurants.get(i).getName().equals(restaurant.getName())){
+                                        Intent intent = SingleRestaurantInspection.makeIntent(GoogleMapActivity.this,
+                                                restaurant);
+                                        startActivity(intent);
+                                    }
+                                }
+                            }
+                        });
                     }
                 }catch(NullPointerException e){
                     Log.e(TAG, "onClick: NullPointerException: " + e.getMessage());
@@ -489,11 +502,11 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                             mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                                 @Override
                                 public boolean onMarkerClick(Marker marker) {
-                                    setUpImageViewClick();
                                     for(int i = 0; i < restaurants.size(); i++)                                 {
                                         LatLng temp = new LatLng(restaurants.get(i).getLatitude()
                                                 ,restaurants.get(i).getLongitude());
                                         if(temp.equals(marker.getPosition())){
+                                            setUpImageViewClick(restaurants.get(i));
                                             setUpCustomWindowAdapter(marker.getPosition()
                                                     , DEFAULT_ZOOM
                                                     , restaurants.get(i));
