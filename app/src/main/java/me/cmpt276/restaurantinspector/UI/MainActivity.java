@@ -115,11 +115,11 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.restaurant_list:
                         return true;
                     case R.id.map:
+                        overridePendingTransition(0,0);
                         finish();
                         Intent intent = GoogleMapActivity.makeIntent(MainActivity.this, myRestaurants);
                         intent.putExtra("fetch_data", "no_fetch");
                         startActivity(intent);
-                        overridePendingTransition(0,0);
                         return true;
                 }
                 return false;

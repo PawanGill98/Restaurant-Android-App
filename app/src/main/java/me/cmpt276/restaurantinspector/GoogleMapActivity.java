@@ -115,6 +115,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_google_map);
         Bundle extras = getIntent().getExtras();
+        setupDialog();
         String fetch = "";
         if (extras != null) {
             fetch = extras.getString("fetch_data");
@@ -128,8 +129,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 StrictMode.setThreadPolicy(policy);
             }
 
-
-            setupDialog();
             if (!checkFileExists(RESTAURANT_FILE) && !checkFileExists(INSPECTIONS_FILE) && !checkFileExists(VERSION_FILE)) {
                 FileOutputStream askUpdateStream ;
                 try {
@@ -211,7 +210,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         if (fetch != null && fetch.equals("no_fetch")) {
             // Don't fetch data
         } else {
-            setupDialog();
             try {
                 String askUpdate;
                 InputStream askUpdateStream = openFileInput(ASK_FOR_UPDATE);
@@ -384,14 +382,14 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         button_update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (button_update.getText().equals("Update")) {
+                if (button_update.getText().equals("Done")) {
+                    dialog.dismiss();
+                }
+                else {
                     csvUpdater = new CSVUpdater();
                     csvUpdater.execute();
                     button_update.setText("");
                     dialog.findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
-                } else if (button_update.getText().equals("Done")) {
-                    dialog.dismiss();
-
                 }
             }
         });
@@ -433,9 +431,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 switch(item.getItemId()){
                     case R.id.restaurant_list:
                         overridePendingTransition(0,0);
-
-
-
                         finish();
                         Intent myIntent = new Intent(GoogleMapActivity.this, MainActivity.class);
                         GoogleMapActivity.this.startActivity(myIntent);
@@ -642,139 +637,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 e.printStackTrace();
             }
             return null;
-        }
-
-        private void setupDialog() {
-            dialog = new Dialog(GoogleMapActivity.this);
-            dialog.setContentView(R.layout.message_layout);
-            dialog.setCancelable(false);
-
-
-            final Button button_cancel = dialog.findViewById(R.id.button_cancel);
-            button_cancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Button button_update = dialog.findViewById(R.id.button_update);
-                    if (button_update.getText().equals("")) {
-                        csvUpdater.cancel(true);
-                        File dir = getFilesDir();
-                        if (checkFileExists(RESTAURANT_FILE1)) {
-                            File createdRestaurantsFile = new File(dir, RESTAURANT_FILE1);
-                            createdRestaurantsFile.delete();
-                        }
-                        if (checkFileExists(INSPECTIONS_FILE1)) {
-                            File createdInspectionsFile = new File(dir, INSPECTIONS_FILE1);
-                            createdInspectionsFile.delete();
-                        }
-                    }
-
-
-                    dialog.findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
-                    dialog.dismiss();
-                }
-            });
-
-
-            final Button button_update = dialog.findViewById(R.id.button_update);
-            button_update.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (button_update.getText().equals("Update")) {
-                        csvUpdater = new GoogleMapActivity.CSVUpdater();
-                        csvUpdater.execute();
-                        button_update.setText("");
-                        dialog.findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
-                    } else if (button_update.getText().equals("Done")) {
-                        dialog.dismiss();
-
-                    }
-                }
-            });
-        }
-
-        private void onBackgroundTaskDataObtained(String results, String results2) {
-            if (csvUpdater.isCancelled()) {
-                return;
-            }
-            Button button = dialog.findViewById(R.id.button_update);
-            button.setText("Done");
-            dialog.findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
-            final Button button2 = dialog.findViewById(R.id.button_cancel);
-            button2.setVisibility(View.INVISIBLE);
-
-            File dir = getFilesDir();
-            if (checkFileExists(RESTAURANT_FILE)) {
-                File oldRestaurantsFile = new File(dir, RESTAURANT_FILE);
-                oldRestaurantsFile.delete();
-            }
-            if (checkFileExists(INSPECTIONS_FILE)){
-                File oldInspectionsFile = new File(dir, INSPECTIONS_FILE);
-                oldInspectionsFile.delete();
-            }
-            File newRestaurantsFile = new File(dir, RESTAURANT_FILE1);
-            File newInspectionsFile = new File(dir, INSPECTIONS_FILE1);
-
-            newRestaurantsFile.renameTo(new File(dir,RESTAURANT_FILE));
-            newInspectionsFile.renameTo(new File(dir,INSPECTIONS_FILE));
-
-            try {
-                FileInputStream restaurantFIS = openFileInput(RESTAURANT_FILE);
-                InputStream inspectionsFIS = openFileInput(INSPECTIONS_FILE);
-                CSVReader.readRestaurantData(restaurantFIS);
-                CSVReader.readUpdatedInspectionReportData(inspectionsFIS, getResources().openRawResource(R.raw.brief_descriptions), getResources().openRawResource(R.raw.allviolations));
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                FileOutputStream  versionFile = openFileOutput(VERSION_FILE, MODE_PRIVATE);
-                BufferedWriter versionFileWriter = new BufferedWriter( new OutputStreamWriter(versionFile, "UTF-8"));
-                FileHandler.writeToInternalMemory(versionFileWriter, "on_updated_version");
-                versionFileWriter.close();
-
-                FileOutputStream lastModifiedStream = openFileOutput(LAST_MODIFIED_FILE, MODE_PRIVATE);
-                BufferedWriter lastModifiedWriter = new BufferedWriter( new OutputStreamWriter(lastModifiedStream, "UTF-8"));
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
-                Date date = new Date();
-                FileHandler.writeToInternalMemory(lastModifiedWriter, dateFormat.format(date));
-                lastModifiedWriter.close();
-
-                FileOutputStream localBuildStream = openFileOutput(LOCAL_BUILD_DATE, MODE_PRIVATE);
-                BufferedWriter localBuildWriter = new BufferedWriter( new OutputStreamWriter(localBuildStream, "UTF-8"));
-                String serverLastModified = FileHandler.readInspectionsDateModified().replace("T", " ").replace("-", "").substring(0, 17);
-                FileHandler.writeToInternalMemory(localBuildWriter, serverLastModified);
-                localBuildWriter.close();
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            FileOutputStream fos = null;
-            try {
-                fos = openFileOutput(ASK_FOR_UPDATE, MODE_PRIVATE);
-                BufferedWriter writer = new BufferedWriter( new OutputStreamWriter(fos, "UTF-8"));
-                FileHandler.writeToInternalMemory(writer, FALSE);
-                writer.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            for (Restaurant restaurant : restaurantManager.getRestaurants()) {
-                if (restaurant.hasInspections()) {
-                    restaurant.sortInspectionDates();
-                }
-            }
         }
 
         @Override
