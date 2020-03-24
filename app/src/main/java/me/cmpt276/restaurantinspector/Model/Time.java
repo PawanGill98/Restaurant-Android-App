@@ -1,8 +1,10 @@
 package me.cmpt276.restaurantinspector.Model;
 
 import java.text.DateFormatSymbols;
-import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  *  implements methods related to time computations
@@ -38,5 +40,22 @@ public class Time {
         String[] months = dateFormat.getMonths();
         monthName = months[monthNumber-1];
         return monthName;
+    }
+
+    public static int calculateHourDifference(String date1, String date2) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
+        Date d1 = null;
+        Date d2 = null;
+        try {
+            d1 = format.parse(date1);
+            d2 = format.parse(date2);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long diff = d2.getTime() - d1.getTime();
+
+        long diffHours = diff / (60 * 60 * 1000);
+        int hours = Math.abs((int) diffHours);
+        return hours;
     }
 }
