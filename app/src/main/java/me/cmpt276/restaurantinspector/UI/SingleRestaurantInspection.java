@@ -136,7 +136,8 @@ public class SingleRestaurantInspection extends AppCompatActivity {
                 id = R.drawable.red_cross_sign_icon;
                 break;
             default:
-                throw new IllegalStateException("Unexpected value: " + hazard);
+                id = R.drawable.question_mark_icon;
+                break;
         }
         return id;
     }

@@ -84,10 +84,7 @@ public class MainActivity extends AppCompatActivity {
     Dialog dialog;
     CSVUpdater csvUpdater;
 
-    public boolean checkFileExists(String fname){
-        File file = getBaseContext().getFileStreamPath(fname);
-        return file.exists();
-    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,271 +93,14 @@ public class MainActivity extends AppCompatActivity {
         setupToolBar();
 
 
-        if (android.os.Build.VERSION.SDK_INT > 9) {
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-        }
-
-
-        setupDialog();
-        if (!checkFileExists(RESTAURANT_FILE) && !checkFileExists(INSPECTIONS_FILE) && !checkFileExists(VERSION_FILE)) {
-            FileOutputStream askUpdateStream ;
-            try {
-                askUpdateStream = openFileOutput(ASK_FOR_UPDATE, MODE_PRIVATE);
-                BufferedWriter askUpdateWriter = new BufferedWriter( new OutputStreamWriter(askUpdateStream, "UTF-8"));
-                FileHandler.writeToInternalMemory(askUpdateWriter, TRUE);
-                askUpdateWriter.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            FileOutputStream restaurantsOutputStream;
-            FileOutputStream inspectionsOutputStream;
-            try {
-                restaurantsOutputStream = openFileOutput(RESTAURANT_FILE, MODE_PRIVATE);
-                InputStream restaurantsInputStream = getResources().openRawResource(R.raw.restaurants_itr1);
-
-                inspectionsOutputStream = openFileOutput(INSPECTIONS_FILE, MODE_PRIVATE);
-                InputStream inspectionsInputStream = getResources().openRawResource(R.raw.inspectionreports_itr1);
-
-                FileHandler.loadIteration1Data(restaurantsInputStream, inspectionsInputStream, restaurantsOutputStream, inspectionsOutputStream);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-
-            FileInputStream restaurantInputStream;
-            try {
-                restaurantInputStream = openFileInput(RESTAURANT_FILE);
-                CSVReader.readRestaurantData(restaurantInputStream);
-                CSVReader.readInspectionReportData(getResources().openRawResource(R.raw.inspectionreports_itr1), getResources().openRawResource(R.raw.brief_descriptions));
-
-                FileOutputStream lastModifiedStream = openFileOutput(LAST_MODIFIED_FILE, MODE_PRIVATE);
-                BufferedWriter lastModifiedWriter = new BufferedWriter( new OutputStreamWriter(lastModifiedStream, "UTF-8"));
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
-                Date date = new Date();
-                FileHandler.writeToInternalMemory(lastModifiedWriter, dateFormat.format(date));
-                lastModifiedWriter.close();
-                FileOutputStream localBuildStream = openFileOutput(LOCAL_BUILD_DATE, MODE_PRIVATE);
-                BufferedWriter localBuildWriter = new BufferedWriter( new OutputStreamWriter(localBuildStream, "UTF-8"));
-                Date date2 = new Date();
-                FileHandler.writeToInternalMemory(localBuildWriter, dateFormat.format(date2));
-                localBuildWriter.close();
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            dialog.show();
-        } else {
-            if (checkFileExists(VERSION_FILE)) {
-                FileInputStream restaurantFIS;
-                try {
-                    restaurantFIS = openFileInput(RESTAURANT_FILE);
-                    InputStream inspectionsFIS = openFileInput(INSPECTIONS_FILE);
-                    CSVReader.readRestaurantData(restaurantFIS);
-                    CSVReader.readUpdatedInspectionReportData(inspectionsFIS, getResources().openRawResource(R.raw.brief_descriptions), getResources().openRawResource(R.raw.allviolations));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-
-            } else if (!checkFileExists(VERSION_FILE)) {
-                FileInputStream restaurantInputStream;
-                try {
-                    restaurantInputStream = openFileInput(RESTAURANT_FILE);
-                    CSVReader.readRestaurantData(restaurantInputStream);
-                    CSVReader.readInspectionReportData(getResources().openRawResource(R.raw.inspectionreports_itr1), getResources().openRawResource(R.raw.brief_descriptions));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            try {
-                String askUpdate;
-                InputStream askUpdateStream = openFileInput(ASK_FOR_UPDATE);
-                BufferedReader askUpdateReader = new BufferedReader(new InputStreamReader(askUpdateStream, Charset.forName("UTF-8")));
-                askUpdate = askUpdateReader.readLine();
-                askUpdateReader.close();
-
-                String localLastModified;
-                InputStream lastModifiedStream = openFileInput(LAST_MODIFIED_FILE);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(lastModifiedStream, Charset.forName("UTF-8")));
-                localLastModified = reader.readLine();
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
-                reader.close();
-
-                String localBuildDate;
-                InputStream localBuildStream = openFileInput(LOCAL_BUILD_DATE);
-                BufferedReader localBuildReader = new BufferedReader(new InputStreamReader(localBuildStream, Charset.forName("UTF-8")));
-                localBuildDate = localBuildReader.readLine();
-                localBuildReader.close();
-
-                Date date = new Date();
-                if (askUpdate.equals("TRUE")) {
-                    dialog.show();
-                } else {
-                    if (Time.calculateHourDifference(formatter.format(date), localLastModified) > 20) {
-                        String serverLastModified = FileHandler.readInspectionsDateModified().replace("T", " ").replace("-", "").substring(0, 17);
-                        if (!localBuildDate.equals(serverLastModified)) {
-                            dialog.show();
-                        }
-                    }
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
         restaurantManager = RestaurantManager.getInstance();
-
         myRestaurants = restaurantManager.getRestaurants();
         populateListView();
-
+        registerClickCallBack();
         setUpBottomNavigation();
     }
 
-    private void setupDialog() {
-        dialog = new Dialog(MainActivity.this);
-        dialog.setContentView(R.layout.message_layout);
-        dialog.setCancelable(false);
 
-
-        final Button button_cancel = dialog.findViewById(R.id.button_cancel);
-        button_cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Button button_update = dialog.findViewById(R.id.button_update);
-                if (button_update.getText().equals("")) {
-                    csvUpdater.cancel(true);
-                    File dir = getFilesDir();
-                    if (checkFileExists(RESTAURANT_FILE1)) {
-                        File createdRestaurantsFile = new File(dir, RESTAURANT_FILE1);
-                        createdRestaurantsFile.delete();
-                    }
-                    if (checkFileExists(INSPECTIONS_FILE1)) {
-                        File createdInspectionsFile = new File(dir, INSPECTIONS_FILE1);
-                        createdInspectionsFile.delete();
-                    }
-                }
-
-
-                dialog.findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
-                dialog.dismiss();
-            }
-        });
-
-
-        final Button button_update = dialog.findViewById(R.id.button_update);
-        button_update.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (button_update.getText().equals("Update")) {
-                    csvUpdater = new CSVUpdater();
-                    csvUpdater.execute();
-                    button_update.setText("");
-                    dialog.findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
-                } else if (button_update.getText().equals("Done")) {
-                    dialog.dismiss();
-
-                }
-            }
-        });
-    }
-
-    private void onBackgroundTaskDataObtained(String results, String results2) {
-        if (csvUpdater.isCancelled()) {
-            return;
-        }
-        Button button = dialog.findViewById(R.id.button_update);
-        button.setText("Done");
-        dialog.findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
-        final Button button2 = dialog.findViewById(R.id.button_cancel);
-        button2.setVisibility(View.INVISIBLE);
-
-        File dir = getFilesDir();
-        if (checkFileExists(RESTAURANT_FILE)) {
-            File oldRestaurantsFile = new File(dir, RESTAURANT_FILE);
-            oldRestaurantsFile.delete();
-        }
-        if (checkFileExists(INSPECTIONS_FILE)){
-            File oldInspectionsFile = new File(dir, INSPECTIONS_FILE);
-            oldInspectionsFile.delete();
-        }
-        File newRestaurantsFile = new File(dir, RESTAURANT_FILE1);
-        File newInspectionsFile = new File(dir, INSPECTIONS_FILE1);
-
-        newRestaurantsFile.renameTo(new File(dir,RESTAURANT_FILE));
-        newInspectionsFile.renameTo(new File(dir,INSPECTIONS_FILE));
-
-        try {
-            FileInputStream restaurantFIS = openFileInput(RESTAURANT_FILE);
-            InputStream inspectionsFIS = openFileInput(INSPECTIONS_FILE);
-            CSVReader.readRestaurantData(restaurantFIS);
-            CSVReader.readUpdatedInspectionReportData(inspectionsFIS, getResources().openRawResource(R.raw.brief_descriptions), getResources().openRawResource(R.raw.allviolations));
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            FileOutputStream  versionFile = openFileOutput(VERSION_FILE, MODE_PRIVATE);
-            BufferedWriter versionFileWriter = new BufferedWriter( new OutputStreamWriter(versionFile, "UTF-8"));
-            FileHandler.writeToInternalMemory(versionFileWriter, "on_updated_version");
-            versionFileWriter.close();
-
-            FileOutputStream lastModifiedStream = openFileOutput(LAST_MODIFIED_FILE, MODE_PRIVATE);
-            BufferedWriter lastModifiedWriter = new BufferedWriter( new OutputStreamWriter(lastModifiedStream, "UTF-8"));
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
-            Date date = new Date();
-            FileHandler.writeToInternalMemory(lastModifiedWriter, dateFormat.format(date));
-            lastModifiedWriter.close();
-
-            FileOutputStream localBuildStream = openFileOutput(LOCAL_BUILD_DATE, MODE_PRIVATE);
-            BufferedWriter localBuildWriter = new BufferedWriter( new OutputStreamWriter(localBuildStream, "UTF-8"));
-            String serverLastModified = FileHandler.readInspectionsDateModified().replace("T", " ").replace("-", "").substring(0, 17);
-            FileHandler.writeToInternalMemory(localBuildWriter, serverLastModified);
-            localBuildWriter.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        FileOutputStream fos = null;
-        try {
-            fos = openFileOutput(ASK_FOR_UPDATE, MODE_PRIVATE);
-            BufferedWriter writer = new BufferedWriter( new OutputStreamWriter(fos, "UTF-8"));
-            FileHandler.writeToInternalMemory(writer, FALSE);
-            writer.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        for (Restaurant restaurant : restaurantManager.getRestaurants()) {
-            if (restaurant.hasInspections()) {
-                restaurant.sortInspectionDates();
-            }
-        }
-        populateListView();
-    }
 
 
     private void setUpBottomNavigation(){
@@ -375,7 +115,9 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.restaurant_list:
                         return true;
                     case R.id.map:
+                        finish();
                         Intent intent = GoogleMapActivity.makeIntent(MainActivity.this, myRestaurants);
+                        intent.putExtra("fetch_data", "no_fetch");
                         startActivity(intent);
                         overridePendingTransition(0,0);
                         return true;
@@ -395,15 +137,6 @@ public class MainActivity extends AppCompatActivity {
         ListView listView = findViewById(R.id.restaurantListView);
         listView.setAdapter(adapter);
         registerClickCallBack();
-    }
-
-    private void clearListView() {
-
-        ArrayAdapter<Restaurant> adapter = new MyListAdapter();
-        ListView listView = findViewById(R.id.restaurantListView);
-        adapter.clear();
-        adapter.notifyDataSetChanged();
-        listView.setAdapter(null);
     }
 
     private class MyListAdapter extends ArrayAdapter<Restaurant> {
@@ -526,143 +259,6 @@ public class MainActivity extends AppCompatActivity {
             return null;
         }
 
-        private void setupDialog() {
-            dialog = new Dialog(MainActivity.this);
-            dialog.setContentView(R.layout.message_layout);
-            dialog.setCancelable(false);
 
-
-            final Button button_cancel = dialog.findViewById(R.id.button_cancel);
-            button_cancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Button button_update = dialog.findViewById(R.id.button_update);
-                    if (button_update.getText().equals("")) {
-                        csvUpdater.cancel(true);
-                        File dir = getFilesDir();
-                        if (checkFileExists(RESTAURANT_FILE1)) {
-                            File createdRestaurantsFile = new File(dir, RESTAURANT_FILE1);
-                            createdRestaurantsFile.delete();
-                        }
-                        if (checkFileExists(INSPECTIONS_FILE1)) {
-                            File createdInspectionsFile = new File(dir, INSPECTIONS_FILE1);
-                            createdInspectionsFile.delete();
-                        }
-                    }
-
-
-                    dialog.findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
-                    dialog.dismiss();
-                }
-            });
-
-
-            final Button button_update = dialog.findViewById(R.id.button_update);
-            button_update.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (button_update.getText().equals("Update")) {
-                        csvUpdater = new CSVUpdater();
-                        csvUpdater.execute();
-                        button_update.setText("");
-                        dialog.findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
-                    } else if (button_update.getText().equals("Done")) {
-                        dialog.dismiss();
-
-                    }
-                }
-            });
-        }
-
-        private void onBackgroundTaskDataObtained(String results, String results2) {
-            if (csvUpdater.isCancelled()) {
-                return;
-            }
-            Button button = dialog.findViewById(R.id.button_update);
-            button.setText("Done");
-            dialog.findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
-            final Button button2 = dialog.findViewById(R.id.button_cancel);
-            button2.setVisibility(View.INVISIBLE);
-
-            File dir = getFilesDir();
-            if (checkFileExists(RESTAURANT_FILE)) {
-                File oldRestaurantsFile = new File(dir, RESTAURANT_FILE);
-                oldRestaurantsFile.delete();
-            }
-            if (checkFileExists(INSPECTIONS_FILE)){
-                File oldInspectionsFile = new File(dir, INSPECTIONS_FILE);
-                oldInspectionsFile.delete();
-            }
-            File newRestaurantsFile = new File(dir, RESTAURANT_FILE1);
-            File newInspectionsFile = new File(dir, INSPECTIONS_FILE1);
-
-            newRestaurantsFile.renameTo(new File(dir,RESTAURANT_FILE));
-            newInspectionsFile.renameTo(new File(dir,INSPECTIONS_FILE));
-
-            try {
-                FileInputStream restaurantFIS = openFileInput(RESTAURANT_FILE);
-                InputStream inspectionsFIS = openFileInput(INSPECTIONS_FILE);
-                CSVReader.readRestaurantData(restaurantFIS);
-                CSVReader.readUpdatedInspectionReportData(inspectionsFIS, getResources().openRawResource(R.raw.brief_descriptions), getResources().openRawResource(R.raw.allviolations));
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                FileOutputStream  versionFile = openFileOutput(VERSION_FILE, MODE_PRIVATE);
-                BufferedWriter versionFileWriter = new BufferedWriter( new OutputStreamWriter(versionFile, "UTF-8"));
-                FileHandler.writeToInternalMemory(versionFileWriter, "on_updated_version");
-                versionFileWriter.close();
-
-                FileOutputStream lastModifiedStream = openFileOutput(LAST_MODIFIED_FILE, MODE_PRIVATE);
-                BufferedWriter lastModifiedWriter = new BufferedWriter( new OutputStreamWriter(lastModifiedStream, "UTF-8"));
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
-                Date date = new Date();
-                FileHandler.writeToInternalMemory(lastModifiedWriter, dateFormat.format(date));
-                lastModifiedWriter.close();
-
-                FileOutputStream localBuildStream = openFileOutput(LOCAL_BUILD_DATE, MODE_PRIVATE);
-                BufferedWriter localBuildWriter = new BufferedWriter( new OutputStreamWriter(localBuildStream, "UTF-8"));
-                String serverLastModified = FileHandler.readInspectionsDateModified().replace("T", " ").replace("-", "").substring(0, 17);
-                FileHandler.writeToInternalMemory(localBuildWriter, serverLastModified);
-                localBuildWriter.close();
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            FileOutputStream fos = null;
-            try {
-                fos = openFileOutput(ASK_FOR_UPDATE, MODE_PRIVATE);
-                BufferedWriter writer = new BufferedWriter( new OutputStreamWriter(fos, "UTF-8"));
-                FileHandler.writeToInternalMemory(writer, FALSE);
-                writer.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            for (Restaurant restaurant : restaurantManager.getRestaurants()) {
-                if (restaurant.hasInspections()) {
-                    restaurant.sortInspectionDates();
-                }
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            MainActivity.this.onBackgroundTaskDataObtained(restaurantsData, inspectionsData);
-        }
     }
 }
