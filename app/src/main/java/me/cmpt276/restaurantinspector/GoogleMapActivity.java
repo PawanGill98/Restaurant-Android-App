@@ -13,6 +13,8 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -22,6 +24,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -48,12 +51,44 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
     private boolean mLocationPermissionGranted = false;
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
+    private Marker mMarker;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_google_map);
 
+        setUpBottomNavigation();
+        setUpMapFragmentSupport();
+    }
+
+    private void setUpImageViewClick(){
+        ImageView imageView = findViewById(R.id.place_info);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try{
+                    if(mMarker.isInfoWindowShown()){
+                        mMarker.hideInfoWindow();
+                    }else{
+                        mMarker.showInfoWindow();
+                    }
+                }catch(NullPointerException e){
+                    Log.e(TAG, "onClick: NullPointerException: " + e.getMessage());
+                }
+            }
+        });
+    }
+
+    private void setUpMapFragmentSupport(){
+        getLocationPermission();
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+    }
+
+    private void setUpBottomNavigation(){
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 
         bottomNavigationView.setSelectedItemId(R.id.map);
@@ -72,11 +107,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 return false;
             }
         });
-
-        getLocationPermission();
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
     }
 
     private void setAllRestaurantsLocations(){
@@ -94,7 +124,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-//        Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
         mMap = googleMap;
 
         if(mLocationPermissionGranted){
@@ -120,7 +149,25 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                         if(task.isSuccessful()){
                             Log.d(TAG, "onComplete: found location!");
                             Location currentLocation = (Location) task.getResult();
+
                             setAllRestaurantsLocations();
+                            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                                @Override
+                                public boolean onMarkerClick(Marker marker) {
+                                    setUpImageViewClick();
+                                    for(int i = 0; i < restaurants.size(); i++)                                 {
+                                        LatLng temp = new LatLng(restaurants.get(i).getLatitude()
+                                                ,restaurants.get(i).getLongitude());
+                                        if(temp.equals(marker.getPosition())){
+                                            setUpCustomWindowAdapter(marker.getPosition()
+                                                    , DEFAULT_ZOOM
+                                                    , restaurants.get(i));
+                                        }
+                                    }
+                                    return false;
+                                }
+                            });
+
                             moveCamera(new LatLng(currentLocation.getLatitude(),
                                     currentLocation.getLongitude()), DEFAULT_ZOOM);
                         }else{
@@ -133,6 +180,29 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
             }
         }catch (SecurityException e){
             Log.e(TAG, "getDeviceLocation: SecurityException: " + e.getMessage());
+        }
+    }
+
+    private void setUpCustomWindowAdapter(LatLng latLng, float zoom, Restaurant restaurant){
+        mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(GoogleMapActivity.this));
+
+        try{
+            String snippet;
+            if(!restaurant.getInspections().isEmpty()) {
+                snippet = "Address: " + restaurant.getAddress() + "\n" +
+                        "Hazard level: " + restaurant.getInspections().get(0).getHazardRating();
+            }else{
+                snippet = "Address: " + restaurant.getAddress() + "\n" +
+                        "No inspections happened in this restaurant";
+            }
+            MarkerOptions options = new MarkerOptions()
+                    .position(latLng)
+                    .title(restaurant.getName())
+                    .snippet(snippet);
+            mMarker = mMap.addMarker(options);
+
+        }catch (NullPointerException e){
+            Log.e(TAG, "moveCamera: NullPointerException: " + e.getMessage());
         }
     }
 

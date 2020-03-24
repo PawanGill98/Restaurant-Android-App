@@ -35,4 +35,23 @@
         android:layout_height="match_parent"
         tools:context=".MapsActivity" />
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:elevation="10dp"
+        android:id="@+id/ic_margin">
+
+        <ImageView
+            android:id="@+id/place_info"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="15dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_info"/>
+    </RelativeLayout>
+
 </RelativeLayout>
