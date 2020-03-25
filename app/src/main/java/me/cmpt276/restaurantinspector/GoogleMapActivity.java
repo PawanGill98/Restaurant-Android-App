@@ -70,6 +70,8 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         return new Intent(c, GoogleMapActivity.class);
     }
 
+
+
     private RestaurantManager restaurantManager;
     private List<Restaurant> restaurants;
     private static final String TAG = "MainActivity";

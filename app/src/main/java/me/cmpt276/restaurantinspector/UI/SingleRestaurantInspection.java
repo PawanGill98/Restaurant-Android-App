@@ -51,6 +51,7 @@ public class SingleRestaurantInspection extends AppCompatActivity {
                 Intent intent = MapsActivity.makeIntent(SingleRestaurantInspection.this,
                         restaurant.getLatitude(), restaurant.getLongitude(), restaurant.getName());
                 startActivity(intent);
+                finish();
             }
         });
     }

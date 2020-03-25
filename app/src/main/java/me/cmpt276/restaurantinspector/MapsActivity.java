@@ -1,6 +1,7 @@
 package me.cmpt276.restaurantinspector;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -9,9 +10,11 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -25,9 +28,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.util.List;
 import java.util.Map;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+import me.cmpt276.restaurantinspector.Model.Restaurant;
+import me.cmpt276.restaurantinspector.Model.RestaurantManager;
+
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     public static Intent makeIntent(Context c, double latitude, double longitude
             , String restaurantName){
@@ -55,9 +62,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return;
             }
             mMap.setMyLocationEnabled(true);
+            setUpToolBar();
         }
     }
 
+    private void setUpToolBar() {
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.green2)));
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            RestaurantManager manager = RestaurantManager.getInstance();
+            List<Restaurant> restaurants = manager.getRestaurants();
+            Intent intent = GoogleMapActivity.makeIntent(MapsActivity.this, restaurants);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            this.finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     private static final String TAG = "MainActivity";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -152,6 +178,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             ActivityCompat.requestPermissions(this,
                     permissions, LOCATION_PERMISSION_REQUEST_CODE);
         }
+    }
+
+    @Override
+    public void onBackPressed()    {
+        RestaurantManager manager = RestaurantManager.getInstance();
+        List<Restaurant> restaurants = manager.getRestaurants();
+        Intent intent = GoogleMapActivity.makeIntent(MapsActivity.this, restaurants);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        this.finish();
     }
 
     @Override
