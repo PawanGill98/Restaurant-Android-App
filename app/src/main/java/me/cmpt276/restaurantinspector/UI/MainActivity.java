@@ -154,8 +154,10 @@ public class MainActivity extends AppCompatActivity {
 
             TextView restaurantName = itemView.findViewById(R.id.item_restaurantName);
             restaurantName.setText(currentRestaurant.getName());
+            parent.setBackgroundColor(getResources().getColor(R.color.beige));
 
             if(currentRestaurant.hasInspections()){
+                Log.d("Inside if", currentRestaurant.getName());
                 ImageView hazardIcon = itemView.findViewById(R.id.item_hazardIcon);
                 switch (currentRestaurant.getInspections().get(0).getHazardRating()) {
                     case "Low":
@@ -176,19 +178,17 @@ public class MainActivity extends AppCompatActivity {
                 TextView date = itemView.findViewById(R.id.item_date);
                 date.setText(getString(R.string.current_restaurant_date,
                         currentRestaurant.getInspections().get(0).getHowLongAgo()));
-                parent.setBackgroundColor(getResources().getColor(R.color.beige));
 
-            }
-            else {
-                Resources res = getContext().getResources();
-                ImageView hazardIcon = itemView.findViewById(R.id.item_hazardIcon);
-                int newColor = res.getColor(R.color.blue);
-                hazardIcon.setColorFilter(newColor, PorterDuff.Mode.SRC_ATOP);
+            } else{
+                Log.d("Inside else", currentRestaurant.getName());
                 TextView issues = itemView.findViewById(R.id.item_issues);
                 issues.setText(getString(R.string.no_inspections));
 
                 TextView date = itemView.findViewById(R.id.item_date);
                 date.setText(getString(R.string.empty_string));
+
+                ImageView imageView = itemView.findViewById(R.id.item_hazardIcon);
+                imageView.setImageDrawable(getResources().getDrawable(R.drawable.hazard));
             }
             return itemView;
         }

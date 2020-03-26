@@ -22,9 +22,9 @@
 
     <TextView
         android:id="@+id/screen2_restaurant_name"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:gravity="center"
         android:layout_marginTop="16dp"
         android:text="@string/restaurant_name"
         android:textColor="@android:color/background_dark"
@@ -36,8 +36,9 @@
 
     <TextView
         android:id="@+id/screen2_restaurant_address"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:layout_marginTop="16dp"
         android:text="@string/restaurant_address"
         android:textColor="@android:color/background_dark"
@@ -49,8 +50,9 @@
 
     <TextView
         android:id="@+id/screen2_gps_coords"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:layout_marginTop="16dp"
         android:text="@string/gps_coords"
         android:textColor="@android:color/background_dark"

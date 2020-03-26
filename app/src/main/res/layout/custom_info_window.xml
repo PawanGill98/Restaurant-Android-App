@@ -14,9 +14,10 @@
         android:id="@+id/adapter_view">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/title"
+            android:gravity="center"
             android:layout_gravity="center"
             android:ellipsize="end"
             android:maxLines="1"
@@ -24,8 +25,9 @@
             android:textSize="14sp"
             android:textStyle="bold"/>
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:id="@+id/snippet"
             android:ellipsize="end"
             android:maxLines="10"
