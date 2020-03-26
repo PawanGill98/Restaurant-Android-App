@@ -22,7 +22,7 @@
 
     <TextView
         android:id="@+id/item_restaurantName"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="100dp"
         android:layout_marginLeft="100dp"
@@ -30,6 +30,7 @@
         android:text="@string/restaurant_name"
         android:textColor="@android:color/background_dark"
         android:textSize="18sp"
+        android:gravity="center"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
