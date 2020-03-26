@@ -3,7 +3,6 @@ package me.cmpt276.restaurantinspector.UI;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
-import android.icu.text.UnicodeSetSpanner;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,15 +12,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
-import me.cmpt276.restaurantinspector.GoogleMapActivity;
-import me.cmpt276.restaurantinspector.MapsActivity;
+import me.cmpt276.restaurantinspector.GoogleMaps.GoogleMapActivity;
 import me.cmpt276.restaurantinspector.Model.Inspection;
 import me.cmpt276.restaurantinspector.Model.Restaurant;
 import me.cmpt276.restaurantinspector.R;

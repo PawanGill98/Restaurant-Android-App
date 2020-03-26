@@ -33,7 +33,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-import me.cmpt276.restaurantinspector.GoogleMapActivity;
+import me.cmpt276.restaurantinspector.GoogleMaps.GoogleMapActivity;
 import me.cmpt276.restaurantinspector.Model.FileHandler;
 import me.cmpt276.restaurantinspector.Model.Restaurant;
 import me.cmpt276.restaurantinspector.Model.RestaurantManager;

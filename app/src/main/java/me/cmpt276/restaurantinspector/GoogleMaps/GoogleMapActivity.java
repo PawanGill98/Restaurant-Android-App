@@ -1,4 +1,4 @@
-package me.cmpt276.restaurantinspector;
+package me.cmpt276.restaurantinspector.GoogleMaps;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -61,6 +61,7 @@ import me.cmpt276.restaurantinspector.Model.Inspection;
 import me.cmpt276.restaurantinspector.Model.Restaurant;
 import me.cmpt276.restaurantinspector.Model.RestaurantManager;
 import me.cmpt276.restaurantinspector.Model.Time;
+import me.cmpt276.restaurantinspector.R;
 import me.cmpt276.restaurantinspector.UI.MainActivity;
 import me.cmpt276.restaurantinspector.UI.SingleRestaurantInspection;
 
@@ -69,8 +70,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
     public static Intent makeIntent(Context c){
         return new Intent(c, GoogleMapActivity.class);
     }
-
-
 
     private RestaurantManager restaurantManager;
     private List<Restaurant> restaurants;
