@@ -34,5 +34,6 @@
     <string name="title_activity_maps">Map</string>
     <string name="restaurant_name_on_map">%1$s</string>
     <string name="my_location_title">My Location</string>
+    <string name="snippet">%1$s</string>
 
 </resources>

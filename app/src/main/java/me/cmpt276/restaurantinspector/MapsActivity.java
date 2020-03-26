@@ -77,7 +77,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (item.getItemId() == android.R.id.home) {
             RestaurantManager manager = RestaurantManager.getInstance();
             List<Restaurant> restaurants = manager.getRestaurants();
-            Intent intent = GoogleMapActivity.makeIntent(MapsActivity.this, restaurants);
+            Intent intent = GoogleMapActivity.makeIntent(MapsActivity.this);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             this.finish();
@@ -184,7 +184,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onBackPressed()    {
         RestaurantManager manager = RestaurantManager.getInstance();
         List<Restaurant> restaurants = manager.getRestaurants();
-        Intent intent = GoogleMapActivity.makeIntent(MapsActivity.this, restaurants);
+        Intent intent = GoogleMapActivity.makeIntent(MapsActivity.this);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         this.finish();

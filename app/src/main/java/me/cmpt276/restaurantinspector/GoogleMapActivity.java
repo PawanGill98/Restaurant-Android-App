@@ -10,7 +10,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,7 +18,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -68,8 +66,7 @@ import me.cmpt276.restaurantinspector.UI.SingleRestaurantInspection;
 
 public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    public static Intent makeIntent(Context c, List<Restaurant> restaurants){
-        //GoogleMapActivity.restaurants = restaurants;
+    public static Intent makeIntent(Context c){
         return new Intent(c, GoogleMapActivity.class);
     }
 
@@ -77,7 +74,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
     private RestaurantManager restaurantManager;
     private List<Restaurant> restaurants;
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "GoogleMap";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
@@ -101,11 +98,11 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
     private static final String RESTAURANT_URL = "https://data.surrey.ca/dataset/3c8cb648-0e80-4659-9078-ef4917b90ffb/resource/0e5d04a2-be9b-40fe-8de2-e88362ea916b/download/restaurants.csv";
     private static final String INSPECTIONS_URL = "https://data.surrey.ca/dataset/948e994d-74f5-41a2-b3cb-33fa6a98aa96/resource/30b38b66-649f-4507-a632-d5f6f5fe87f1/download/fraserhealthrestaurantinspectionreports.csv";
     public static final String FALSE = "FALSE";
+    public static final int GOOGLE_MAPS_ACTIVITY_CALL_NUMBER = 1002;
 
     private boolean mLocationPermissionGranted = false;
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-    private Marker mMarker;
 
 
     Dialog dialog;
@@ -115,6 +112,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         File file = getBaseContext().getFileStreamPath(fname);
         return file.exists();
     }
+    private double[] callingActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -262,6 +260,8 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         restaurants = restaurantManager.getRestaurants();
         setUpBottomNavigation();
         setUpMapFragmentSupport();
+
+
     }
 
     private void onBackgroundTaskDataObtained(String results, String results2) {
@@ -422,7 +422,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                         finish();
                         Intent myIntent = new Intent(GoogleMapActivity.this, MainActivity.class);
                         GoogleMapActivity.this.startActivity(myIntent);
-
                         return true;
                     case R.id.map:
                         return true;
@@ -433,23 +432,32 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
     }
 
     private void setAllRestaurantsLocations(){
-        for(int i = 0; i < restaurants.size(); i++){
-            mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(GoogleMapActivity.this));
-            final Location targetLocation = new Location("");
-            targetLocation.setLatitude(restaurants.get(i).getLatitude());
-            targetLocation.setLongitude(restaurants.get(i).getLongitude());
-            LatLng latLng = new LatLng(targetLocation.getLatitude(), targetLocation.getLongitude());
-            float color = BitmapDescriptorFactory.HUE_BLUE;
-            if(restaurants.get(i).hasInspections()) {
-                color = setMarkerColor(color, restaurants.get(i).getInspections().get(0));
-            }
-            MarkerOptions options = new MarkerOptions()
-                    .position(latLng)
-                    .title(getString(R.string.restaurant_name_on_map, restaurants.get(i).getName()))
-                    .snippet(setSnippet(restaurants.get(i)))
-                    .icon(BitmapDescriptorFactory.defaultMarker(color));
-            mMap.addMarker(options);
+        for(int i = 0, j = 1, k = 2, m = 3, n = 4; n < restaurants.size();
+            i += 5, j += 5, k += 5, m += 5,n += 5){
+            setUpInfoWindow(restaurants.get(i));
+            setUpInfoWindow(restaurants.get(j));
+            setUpInfoWindow(restaurants.get(k));
+            setUpInfoWindow(restaurants.get(m));
+            setUpInfoWindow(restaurants.get(n));
         }
+    }
+
+    private void setUpInfoWindow(Restaurant restaurant){
+        mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(GoogleMapActivity.this));
+        final Location targetLocation = new Location("");
+        targetLocation.setLatitude(restaurant.getLatitude());
+        targetLocation.setLongitude(restaurant.getLongitude());
+        LatLng latLng = new LatLng(targetLocation.getLatitude(), targetLocation.getLongitude());
+        float color = BitmapDescriptorFactory.HUE_BLUE;
+        if(restaurant.hasInspections()) {
+            color = setMarkerColor(color, restaurant.getInspections().get(0));
+        }
+        MarkerOptions options = new MarkerOptions()
+                .position(latLng)
+                .title(getString(R.string.restaurant_name_on_map, restaurant.getName()))
+                .snippet(getString(R.string.snippet, setSnippet(restaurant)))
+                .icon(BitmapDescriptorFactory.defaultMarker(color));
+        mMap.addMarker(options);
     }
 
     private float setMarkerColor(float color, Inspection inspection){
@@ -500,23 +508,26 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                             mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                                 @Override
                                 public boolean onMarkerClick(Marker marker) {
-                                    mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                                        @Override
-                                        public void onInfoWindowClick(Marker marker) {
-                                            for(int i = 0; i < restaurants.size(); i++){
-                                                if(restaurants.get(i).getName().equals(marker.getTitle())){
-                                                    Intent intent = SingleRestaurantInspection.makeIntent(GoogleMapActivity.this,
-                                                            restaurants.get(i));
-                                                    startActivity(intent);
-                                                }
-                                            }
-                                        }
-                                    });
+                                    setUpInfoWindowClickable();
                                     return false;
                                 }
                             });
-                            moveCamera(new LatLng(currentLocation.getLatitude(),
-                                    currentLocation.getLongitude()), DEFAULT_ZOOM);
+                            callingActivity = getIntent().getDoubleArrayExtra("latitude/longitude");
+                            if(callingActivity != null) {
+                                Log.d(TAG, "from other activity latitude: " + callingActivity[0]
+                                        + " longitude: " + callingActivity[1]);
+                                moveCamera(new LatLng(callingActivity[0], callingActivity[1]), DEFAULT_ZOOM);
+                                for(int i = 0; i < restaurants.size(); i++){
+                                    if(callingActivity[0] == restaurants.get(i).getLatitude()
+                                            && callingActivity[1] == restaurants.get(i).getLongitude()){
+                                        Log.d(TAG, "from INSIDE");
+                                        setUpInfoWindow(restaurants.get(i));
+                                    }
+                                }
+                            }else {
+                                moveCamera(new LatLng(currentLocation.getLatitude(),
+                                        currentLocation.getLongitude()), DEFAULT_ZOOM);
+                            }
                         }else{
                             Log.d(TAG, "onComplete: current location is null");
                             Toast.makeText(GoogleMapActivity.this,
@@ -528,6 +539,22 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         }catch (SecurityException e){
             Log.e(TAG, "getDeviceLocation: SecurityException: " + e.getMessage());
         }
+    }
+
+    private void setUpInfoWindowClickable(){
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                for(int i = 0; i < restaurants.size(); i++){
+                    if(restaurants.get(i).getName().equals(marker.getTitle())){
+                        Intent intent = SingleRestaurantInspection.makeIntent(GoogleMapActivity.this,
+                                restaurants.get(i));
+                        intent.putExtra("calling_activity", GOOGLE_MAPS_ACTIVITY_CALL_NUMBER);
+                        startActivity(intent);
+                    }
+                }
+            }
+        });
     }
 
     private String setSnippet(Restaurant restaurant){

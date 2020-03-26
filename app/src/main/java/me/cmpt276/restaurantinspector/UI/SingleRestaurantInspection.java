@@ -3,6 +3,7 @@ package me.cmpt276.restaurantinspector.UI;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.icu.text.UnicodeSetSpanner;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,12 +13,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
+import me.cmpt276.restaurantinspector.GoogleMapActivity;
 import me.cmpt276.restaurantinspector.MapsActivity;
 import me.cmpt276.restaurantinspector.Model.Inspection;
 import me.cmpt276.restaurantinspector.Model.Restaurant;
@@ -48,10 +51,16 @@ public class SingleRestaurantInspection extends AppCompatActivity {
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = MapsActivity.makeIntent(SingleRestaurantInspection.this,
-                        restaurant.getLatitude(), restaurant.getLongitude(), restaurant.getName());
-                startActivity(intent);
-                finish();
+                int callingActivity = getIntent().getIntExtra("calling_activity", 0);
+                if(callingActivity == GoogleMapActivity.GOOGLE_MAPS_ACTIVITY_CALL_NUMBER){
+                    finish();
+                }else if(callingActivity == MainActivity.MAIN_ACTIVITY_CALL_NUMBER){
+                    finish();
+                    Intent intent = GoogleMapActivity.makeIntent(SingleRestaurantInspection.this);
+                    intent.putExtra("latitude/longitude"
+                            , new double[]{restaurant.getLatitude(), restaurant.getLongitude()});
+                    startActivity(intent);
+                }
             }
         });
     }
