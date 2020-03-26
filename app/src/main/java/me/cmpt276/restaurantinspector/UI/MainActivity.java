@@ -50,26 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private RestaurantManager restaurantManager;
     private List<Restaurant> myRestaurants;
 
-    public static final String TRUE = "TRUE";
-    private static final String RESTAURANT_FILE = "restaurants.csv";
-    private static final String INSPECTIONS_FILE = "inspections.csv";
-
-    private static final String RESTAURANT_FILE1 = "restaurants1.csv";
-    private static final String INSPECTIONS_FILE1 = "inspections1.csv";
-
-    private static final String VERSION_FILE = "version.txt";
-
-    private static final String LAST_MODIFIED_FILE = "last_modified.txt";
-    private static final String LOCAL_BUILD_DATE = "build_date.txt";
-
-    private static final String ASK_FOR_UPDATE = "ask_update.txt";
-
-    private static final String RESTAURANT_URL = "https://data.surrey.ca/dataset/3c8cb648-0e80-4659-9078-ef4917b90ffb/resource/0e5d04a2-be9b-40fe-8de2-e88362ea916b/download/restaurants.csv";
-    private static final String INSPECTIONS_URL = "https://data.surrey.ca/dataset/948e994d-74f5-41a2-b3cb-33fa6a98aa96/resource/30b38b66-649f-4507-a632-d5f6f5fe87f1/download/fraserhealthrestaurantinspectionreports.csv";
-    public static final String FALSE = "FALSE";
-
     Dialog dialog;
-    CSVUpdater csvUpdater;
 
 
 
@@ -199,54 +180,5 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    public class CSVUpdater extends AsyncTask<Void, Void, Void> {
-        String restaurantsData = "";
-        String inspectionsData = "";
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            try {
-                URL restaurantURL = new URL(RESTAURANT_URL);
-                URL inspectionsURL = new URL(INSPECTIONS_URL);
-
-
-                HttpURLConnection restaurantsURLConnnection = (HttpURLConnection) restaurantURL.openConnection();
-                InputStream restaurantsInputStream = restaurantsURLConnnection.getInputStream();
-                BufferedReader restaurantsReader = new BufferedReader(new InputStreamReader(restaurantsInputStream));
-                String restaurantLine;
-                FileOutputStream restaurantsOutputStream = openFileOutput(RESTAURANT_FILE1, MODE_PRIVATE);
-                BufferedWriter restaurantsBufferedWriter = new BufferedWriter( new OutputStreamWriter(restaurantsOutputStream, "UTF-8"));
-                while ((restaurantLine = restaurantsReader.readLine()) != null) {
-                    Log.d("Resturants: ", restaurantLine);  // Do not delete this
-                    FileHandler.writeToInternalMemory(restaurantsBufferedWriter, restaurantLine);
-                }
-                restaurantsBufferedWriter.close();
-
-
-                HttpURLConnection inspectionsURLConnection = (HttpURLConnection) inspectionsURL.openConnection();
-                InputStream inspectionsInputStream = inspectionsURLConnection.getInputStream();
-                BufferedReader inspectionsReader = new BufferedReader(new InputStreamReader(inspectionsInputStream));
-                String inspectionsLine;
-                FileOutputStream inspectionsOutputStream = openFileOutput(INSPECTIONS_FILE1, MODE_PRIVATE);
-                BufferedWriter inspectionsBufferedWriter = new BufferedWriter( new OutputStreamWriter(inspectionsOutputStream, "UTF-8"));
-
-
-                while ((inspectionsLine = inspectionsReader.readLine()) != null) {
-                    Log.d("Inspections: ", inspectionsLine);    // Do not delete this
-                    FileHandler.writeToInternalMemory(inspectionsBufferedWriter, inspectionsLine);
-                }
-                inspectionsBufferedWriter.close();
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-
     }
 }
