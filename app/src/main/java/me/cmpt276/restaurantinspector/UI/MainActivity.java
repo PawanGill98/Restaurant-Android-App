@@ -1,9 +1,7 @@
 package me.cmpt276.restaurantinspector.UI;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -17,29 +15,13 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import me.cmpt276.restaurantinspector.GoogleMaps.GoogleMapActivity;
-import me.cmpt276.restaurantinspector.Model.FileHandler;
 import me.cmpt276.restaurantinspector.Model.Restaurant;
 import me.cmpt276.restaurantinspector.Model.RestaurantManager;
 import me.cmpt276.restaurantinspector.R;
@@ -54,10 +36,6 @@ public class MainActivity extends AppCompatActivity {
     public static final int MAIN_ACTIVITY_CALL_NUMBER = 1001;
     private RestaurantManager restaurantManager;
     private List<Restaurant> myRestaurants;
-
-    Dialog dialog;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -189,6 +167,9 @@ public class MainActivity extends AppCompatActivity {
                     case "High":
                         hazardIcon.setImageDrawable(getResources().getDrawable(R.drawable.red_cross_sign_icon));
                         break;
+                    default:
+                        hazardIcon.setImageResource(R.drawable.question_mark_icon);
+                        break;
                 }
 
                 int totalIssues = currentRestaurant.getInspections().get(0).getNumNonCritical()
@@ -219,17 +200,13 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                if(!myRestaurants.get(position).hasInspections()){
-                    FragmentManager manager = getSupportFragmentManager();
-                    FirstScreenPopUpFragment dialog = new FirstScreenPopUpFragment();
-                    dialog.show(manager, "Inspection without violations");
-                }
-                else {
+
+
                     Intent intent = SingleRestaurantInspection.makeIntent(MainActivity.this,
                             restaurantManager.getRestaurantByIndex(position));
                     intent.putExtra("calling_activity", MAIN_ACTIVITY_CALL_NUMBER);
                     startActivity(intent);
-                }
+
             }
         });
     }

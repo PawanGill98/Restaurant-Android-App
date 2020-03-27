@@ -86,6 +86,9 @@ public class InspectionActivity extends AppCompatActivity {
             case "High":
                 hazardLevel.setImageResource(R.drawable.red_cross_sign_icon);
                 break;
+            default:
+                hazardLevel.setImageResource(R.drawable.question_mark_icon);
+                break;
         }
     }
 
@@ -124,16 +127,16 @@ public class InspectionActivity extends AppCompatActivity {
             if(id == 304 || id == 305) {
                 type_view.setImageResource(R.drawable.pest);
             }
-            else if(id >= 301 && id <= 311 || id == 315) {
+            else if(id >= 301 && id <= 312 || id == 315) {
                 type_view.setImageResource(R.drawable.equipment);
             }
-            else if(id >= 201 && id <= 212 && id != 207){
+            else if(id >= 201 && id <= 212 && id != 207 || id == 501 || id == 502){
                 type_view.setImageResource(R.drawable.food);
             }
             else if(id >= 101 && id <= 104){
                 type_view.setImageResource(R.drawable.building);
             }
-            else if(id == 314 || id >= 401 && id <= 403){
+            else if(id == 313 || id == 314 || id >= 401 && id <= 404){
                 type_view.setImageResource(R.drawable.sanitization);
             }
 
