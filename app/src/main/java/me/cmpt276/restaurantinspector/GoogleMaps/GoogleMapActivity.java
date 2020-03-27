@@ -28,6 +28,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -35,6 +36,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.maps.android.clustering.ClusterManager;
 
 import org.json.JSONException;
 
@@ -54,6 +56,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -73,6 +76,9 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         return new Intent(c, GoogleMapActivity.class);
     }
 
+    private ClusterManager<MyItem> mClusterManager;
+    private ArrayList<MarkerOptions> mMarkerArray = new ArrayList<>();
+
     private RestaurantManager restaurantManager;
     private List<Restaurant> restaurants;
     private static final String TAG = "GoogleMap";
@@ -80,7 +86,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
     private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 15f;
-
 
     public static final String TRUE = "TRUE";
     private static final String RESTAURANT_FILE = "restaurants.csv";
@@ -104,7 +109,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
     private boolean mLocationPermissionGranted = false;
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-
 
     Dialog dialog;
     CSVUpdater csvUpdater;
@@ -269,7 +273,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         setUpBottomNavigation();
         setUpMapFragmentSupport();
 
-
     }
 
     private void onBackgroundTaskDataObtained(String results, String results2) {
@@ -360,7 +363,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         setUpMapFragmentSupport();
     }
 
-
     private void setupDialog() {
         dialog = new Dialog(GoogleMapActivity.this);
         dialog.setContentView(R.layout.message_layout);
@@ -448,6 +450,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
             setUpInfoWindow(restaurants.get(m));
             setUpInfoWindow(restaurants.get(n));
         }
+        setUpClusters();////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
 
     private void setUpInfoWindow(Restaurant restaurant){
@@ -465,7 +468,8 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 .title(getString(R.string.restaurant_name_on_map, restaurant.getName()))
                 .snippet(getString(R.string.snippet, setSnippet(restaurant)))
                 .icon(BitmapDescriptorFactory.defaultMarker(color));
-        mMap.addMarker(options);
+         //mMap.addMarker(options);
+         mMarkerArray.add(options);////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
 
     private float setMarkerColor(float color, Inspection inspection){
@@ -483,11 +487,10 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         return color;
     }
 
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
+        setUpClusters();
         if(mLocationPermissionGranted){
             getDeviceLocation();
 
@@ -497,7 +500,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 return;
             }
             mMap.setMyLocationEnabled(true);
-
         }
     }
 
@@ -698,5 +700,35 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
 
+    }
+
+    private void setUpClusters(){
+        mClusterManager = new ClusterManager<>(this, mMap);
+        mClusterManager.setAnimation(false);
+        mMap.setOnCameraIdleListener(mClusterManager);
+        mMap.setOnMarkerClickListener(mClusterManager);
+        addItems();
+        mClusterManager.setRenderer(new MarkerClusterRenderer(this, mMap, mClusterManager));
+    }
+
+    private void addItems(){
+        for (MarkerOptions markerOptions : mMarkerArray){
+            MyItem clusterItem = new MyItem(markerOptions.getPosition(), markerOptions.getTitle(), markerOptions.getSnippet(), markerOptions.getIcon());
+            mClusterManager.addItem(clusterItem);
+        }
+
+        mClusterManager.setOnClusterItemInfoWindowClickListener(new ClusterManager.OnClusterItemInfoWindowClickListener<MyItem>() {
+            @Override
+            public void onClusterItemInfoWindowClick(MyItem item) {
+                    for(int i = 0; i < restaurants.size(); i++){
+                        if(restaurants.get(i).getName().equals(item.getTitle())){
+                            Intent intent = SingleRestaurantInspection.makeIntent(GoogleMapActivity.this,
+                                    restaurants.get(i));
+                            intent.putExtra("calling_activity", GOOGLE_MAPS_ACTIVITY_CALL_NUMBER);
+                            startActivity(intent);
+                        }
+                    }
+            }
+        });
     }
 }
