@@ -31,7 +31,12 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import me.cmpt276.restaurantinspector.GoogleMaps.GoogleMapActivity;
 import me.cmpt276.restaurantinspector.Model.FileHandler;
@@ -107,6 +112,48 @@ public class MainActivity extends AppCompatActivity {
         registerClickCallBack();
     }
 
+    //Icon HashMap
+    Map<String, Integer> map = new HashMap<>();
+    //Populate HashMap
+    public void populateMap() {
+        map.put("7-eleven", R.drawable.seveneleven);
+        map.put("a&w", R.drawable.aw);
+        map.put("barcelos", R.drawable.barcelos);
+        map.put("burger king", R.drawable.burgerking);
+        map.put("domino's", R.drawable.dominos);
+        map.put("dairy queen", R.drawable.dq);
+        map.put("freshii", R.drawable.freshii);
+        map.put("freshslice", R.drawable.freshslice);
+        map.put("ihop", R.drawable.ihop);
+        map.put("jugo juice", R.drawable.jugojuice);
+        map.put("kfc", R.drawable.kfc);
+        map.put("little caesars", R.drawable.littlecaesars);
+        map.put("mcdonald's", R.drawable.mcdonalds);
+        map.put("nandos", R.drawable.nandos);
+        map.put("non stop pizza", R.drawable.nonstoppizza);
+        map.put("panago", R.drawable.panago);
+        map.put("pizza hut", R.drawable.pizzahut);
+        map.put("quiznos", R.drawable.quiznos);
+        map.put("safeway", R.drawable.safeway);
+        map.put("save on foods", R.drawable.saveonfoods);
+        map.put("starbucks", R.drawable.starbucks);
+        map.put("subway", R.drawable.subway);
+        map.put("tim hortons", R.drawable.timhortons);
+        map.put("wendy's", R.drawable.wendys);
+        map.put("white spot", R.drawable.whitespot);
+    }
+    //Get Current Restaurant Icon
+    public Integer getIconValue(String restaurantNameKey) {
+        populateMap();
+        Integer RestaurantIcon = R.drawable.restaurant_icon;
+        for(String key : map.keySet()) {
+            if(restaurantNameKey.contains(key)) {
+                RestaurantIcon = map.get(key);
+            }
+        }
+        return RestaurantIcon;
+    }
+
     private class MyListAdapter extends ArrayAdapter<Restaurant> {
         public MyListAdapter() {
             super(MainActivity.this, R.layout.restaurant_view, myRestaurants);
@@ -123,6 +170,11 @@ public class MainActivity extends AppCompatActivity {
             TextView restaurantName = itemView.findViewById(R.id.item_restaurantName);
             restaurantName.setText(currentRestaurant.getName());
             parent.setBackgroundColor(getResources().getColor(R.color.beige));
+
+            //Set Restaurant Icon
+            ImageView restaurantIcon = itemView.findViewById(R.id.item_restaurantIcon);
+            String restaurantNameKey = currentRestaurant.getName().toLowerCase();
+            restaurantIcon.setImageResource(getIconValue(restaurantNameKey));
 
             if(currentRestaurant.hasInspections()){
                 Log.d("Inside if", currentRestaurant.getName());
