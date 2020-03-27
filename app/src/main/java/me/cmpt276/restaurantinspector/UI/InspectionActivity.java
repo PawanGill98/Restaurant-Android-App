@@ -86,6 +86,9 @@ public class InspectionActivity extends AppCompatActivity {
             case "High":
                 hazardLevel.setImageResource(R.drawable.red_cross_sign_icon);
                 break;
+            default:
+                hazardLevel.setImageResource(R.drawable.question_mark_icon);
+                break;
         }
     }
 

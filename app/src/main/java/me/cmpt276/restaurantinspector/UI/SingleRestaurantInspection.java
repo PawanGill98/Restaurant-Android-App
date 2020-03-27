@@ -110,11 +110,9 @@ public class SingleRestaurantInspection extends AppCompatActivity {
             if (itemView == null) {
                 itemView = getLayoutInflater().inflate(R.layout.inspection_view, parent, false);
             }
-
             ImageView imageView = itemView.findViewById(R.id.screen2_hazard_sign);
             int id = chooseHazardSignColor(position);
             imageView.setImageDrawable(getResources().getDrawable(id));
-
             TextView view = itemView.findViewById(R.id.screen2_critical_issue);
             view.setText(getString(R.string.number_critical_issues,
                     restaurant.getInspections().get(position).getNumCritical()));
@@ -123,7 +121,6 @@ public class SingleRestaurantInspection extends AppCompatActivity {
                     restaurant.getInspections().get(position).getNumNonCritical()));
             view = itemView.findViewById(R.id.screen2_inspection_date);
             view.setText(restaurant.getInspections().get(position).getHowLongAgo());
-
             parent.setBackgroundColor(getResources().getColor(R.color.beige));
             return itemView;
         }
@@ -154,16 +151,9 @@ public class SingleRestaurantInspection extends AppCompatActivity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(restaurant.getInspections().get(position).getNumCritical() +
-                        restaurant.getInspections().get(position).getNumNonCritical() == 0){
-                    FragmentManager manager = getSupportFragmentManager();
-                    SecondScreenPopUpFragment dialog = new SecondScreenPopUpFragment();
-                    dialog.show(manager, "Inspection without violations");
-                }else {
-                    Intent intent = InspectionActivity.makeIntent(SingleRestaurantInspection.this,
-                            restaurant.getInspections().get(position), restaurant.getName());
-                    startActivity(intent);
-                }
+                Intent intent = InspectionActivity.makeIntent(SingleRestaurantInspection.this,
+                        restaurant.getInspections().get(position), restaurant.getName());
+                startActivity(intent);
             }
         });
     }

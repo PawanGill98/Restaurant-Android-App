@@ -450,7 +450,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
             setUpInfoWindow(restaurants.get(m));
             setUpInfoWindow(restaurants.get(n));
         }
-        setUpClusters();////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        setUpClusters();
     }
 
     private void setUpInfoWindow(Restaurant restaurant){
@@ -468,8 +468,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 .title(getString(R.string.restaurant_name_on_map, restaurant.getName()))
                 .snippet(getString(R.string.snippet, setSnippet(restaurant)))
                 .icon(BitmapDescriptorFactory.defaultMarker(color));
-         //mMap.addMarker(options);
-         mMarkerArray.add(options);////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+         mMarkerArray.add(options);
     }
 
     private float setMarkerColor(float color, Inspection inspection){
