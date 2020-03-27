@@ -1,4 +1,4 @@
-package me.cmpt276.restaurantinspector;
+package me.cmpt276.restaurantinspector.GoogleMaps;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,6 +7,8 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
+
+import me.cmpt276.restaurantinspector.R;
 
 public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 

@@ -18,7 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
-import me.cmpt276.restaurantinspector.MapsActivity;
+import me.cmpt276.restaurantinspector.GoogleMaps.GoogleMapActivity;
 import me.cmpt276.restaurantinspector.Model.Inspection;
 import me.cmpt276.restaurantinspector.Model.Restaurant;
 import me.cmpt276.restaurantinspector.R;
@@ -48,9 +48,16 @@ public class SingleRestaurantInspection extends AppCompatActivity {
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = MapsActivity.makeIntent(SingleRestaurantInspection.this,
-                        restaurant.getLatitude(), restaurant.getLongitude(), restaurant.getName());
-                startActivity(intent);
+                int callingActivity = getIntent().getIntExtra("calling_activity", 0);
+                if(callingActivity == GoogleMapActivity.GOOGLE_MAPS_ACTIVITY_CALL_NUMBER){
+                    finish();
+                }else if(callingActivity == MainActivity.MAIN_ACTIVITY_CALL_NUMBER){
+                    finish();
+                    Intent intent = GoogleMapActivity.makeIntent(SingleRestaurantInspection.this);
+                    intent.putExtra("latitude/longitude"
+                            , new double[]{restaurant.getLatitude(), restaurant.getLongitude()});
+                    startActivity(intent);
+                }
             }
         });
     }
