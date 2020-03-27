@@ -11,6 +11,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -189,7 +191,10 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                dialog.show();
+                if (isNetworkAvailable()) {
+                    dialog.show();
+                }
+
             } else {
                 if (checkFileExists(VERSION_FILE)) {
                     FileInputStream restaurantFIS;
@@ -238,13 +243,17 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 localBuildReader.close();
 
                 Date date = new Date();
-                if (askUpdate.equals("TRUE")) {
-                    dialog.show();
+                if (askUpdate.equals(TRUE)) {
+                    if (isNetworkAvailable()) {
+                        dialog.show();
+                    }
                 } else {
                     if (Time.calculateHourDifference(formatter.format(date), localLastModified) > 20) {
                         String serverLastModified = FileHandler.readInspectionsDateModified().replace("T", " ").replace("-", "").substring(0, 17);
                         if (!localBuildDate.equals(serverLastModified)) {
-                            dialog.show();
+                            if (isNetworkAvailable()) {
+                                dialog.show();
+                            }
                         }
                     }
                 }
@@ -628,6 +637,13 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         }
     }
 
+    // Referenced from: https://stackoverflow.com/questions/4238921/detect-whether-there-is-an-internet-connection-available-on-android
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
     public class CSVUpdater extends AsyncTask<Void, Void, Void> {
         String restaurantsData = "";
         String inspectionsData = "";
@@ -646,7 +662,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 FileOutputStream restaurantsOutputStream = openFileOutput(RESTAURANT_FILE1, MODE_PRIVATE);
                 BufferedWriter restaurantsBufferedWriter = new BufferedWriter( new OutputStreamWriter(restaurantsOutputStream, "UTF-8"));
                 while ((restaurantLine = restaurantsReader.readLine()) != null) {
-                    Log.d("Resturants: ", restaurantLine);  // Do not delete this
+                    Log.d("Resturants: ", restaurantLine);  // Do not delete this, thread yield.
                     FileHandler.writeToInternalMemory(restaurantsBufferedWriter, restaurantLine);
                 }
                 restaurantsBufferedWriter.close();
@@ -661,7 +677,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
 
                 while ((inspectionsLine = inspectionsReader.readLine()) != null) {
-                    Log.d("Inspections: ", inspectionsLine);    // Do not delete this
+                    Log.d("Inspections: ", inspectionsLine);    // Do not delete this, thread yield.
                     FileHandler.writeToInternalMemory(inspectionsBufferedWriter, inspectionsLine);
                 }
                 inspectionsBufferedWriter.close();
