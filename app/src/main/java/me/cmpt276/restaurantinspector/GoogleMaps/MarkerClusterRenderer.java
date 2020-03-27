@@ -17,14 +17,12 @@ import me.cmpt276.restaurantinspector.R;
 
 public class MarkerClusterRenderer extends DefaultClusterRenderer<MyItem> {
 
-    public MarkerClusterRenderer(Context context, GoogleMap map,
-                                      ClusterManager<MyItem> clusterManager) {
+    public MarkerClusterRenderer(Context context, GoogleMap map, ClusterManager<MyItem> clusterManager) {
         super(context, map, clusterManager);
     }
 
     @Override
-    protected void onBeforeClusterItemRendered(MyItem item,
-                                               MarkerOptions markerOptions) {
+    protected void onBeforeClusterItemRendered(MyItem item, MarkerOptions markerOptions) {
         markerOptions.title(item.getTitle());
         markerOptions.snippet(item.getSnippet());
         markerOptions.icon(item.getColor());
@@ -34,4 +32,5 @@ public class MarkerClusterRenderer extends DefaultClusterRenderer<MyItem> {
     protected void onClusterItemRendered(MyItem clusterItem, Marker marker) {
         super.onClusterItemRendered(clusterItem, marker);
     }
+
 }

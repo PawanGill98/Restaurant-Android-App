@@ -77,7 +77,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
     }
 
     private ClusterManager<MyItem> mClusterManager;
-    private ArrayList<MarkerOptions> mMarkerArray = new ArrayList<>();
+    private ArrayList<MyItem> mMarkerArray = new ArrayList<>();
 
     private RestaurantManager restaurantManager;
     private List<Restaurant> restaurants;
@@ -468,7 +468,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 .title(getString(R.string.restaurant_name_on_map, restaurant.getName()))
                 .snippet(getString(R.string.snippet, setSnippet(restaurant)))
                 .icon(BitmapDescriptorFactory.defaultMarker(color));
-         mMarkerArray.add(options);
+         mMarkerArray.add(new MyItem(options.getPosition(),options.getTitle(),options.getSnippet(),options.getIcon()));
     }
 
     private float setMarkerColor(float color, Inspection inspection){
@@ -489,7 +489,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        setUpClusters();
         if(mLocationPermissionGranted){
             getDeviceLocation();
 
@@ -703,18 +702,16 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
     private void setUpClusters(){
         mClusterManager = new ClusterManager<>(this, mMap);
+        mClusterManager.setRenderer(new MarkerClusterRenderer(this, mMap, mClusterManager));
         mClusterManager.setAnimation(false);
         mMap.setOnCameraIdleListener(mClusterManager);
         mMap.setOnMarkerClickListener(mClusterManager);
         addItems();
-        mClusterManager.setRenderer(new MarkerClusterRenderer(this, mMap, mClusterManager));
     }
 
     private void addItems(){
-        for (MarkerOptions markerOptions : mMarkerArray){
-            MyItem clusterItem = new MyItem(markerOptions.getPosition(), markerOptions.getTitle(), markerOptions.getSnippet(), markerOptions.getIcon());
-            mClusterManager.addItem(clusterItem);
-        }
+        mClusterManager.addItems(mMarkerArray);
+        mClusterManager.cluster();
 
         mClusterManager.setOnClusterItemInfoWindowClickListener(new ClusterManager.OnClusterItemInfoWindowClickListener<MyItem>() {
             @Override

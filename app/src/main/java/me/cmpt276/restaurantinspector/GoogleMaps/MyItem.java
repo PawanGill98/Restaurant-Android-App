@@ -12,19 +12,12 @@ public class MyItem implements ClusterItem {
     private String mSnippet;
     private BitmapDescriptor mColor;
 
-    public MyItem(double lat, double lng, String title, String snippet) {
-        mPosition = new LatLng(lat, lng);
-        mTitle = title;
-        mSnippet = snippet;
-    }
-
     public MyItem(LatLng lat, String title, String snippet, BitmapDescriptor color) {
         mPosition = lat;
         mTitle = title;
         mSnippet = snippet;
         mColor = color;
     }
-
 
     @Override
     public LatLng getPosition() {
@@ -42,5 +35,6 @@ public class MyItem implements ClusterItem {
     }
 
     public BitmapDescriptor getColor(){return mColor;}
+
 }
 
