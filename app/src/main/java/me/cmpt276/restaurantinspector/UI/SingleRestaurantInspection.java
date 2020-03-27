@@ -56,6 +56,7 @@ public class SingleRestaurantInspection extends AppCompatActivity {
                     Intent intent = GoogleMapActivity.makeIntent(SingleRestaurantInspection.this);
                     intent.putExtra("latitude/longitude"
                             , new double[]{restaurant.getLatitude(), restaurant.getLongitude()});
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                 }
             }
