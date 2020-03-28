@@ -548,21 +548,21 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         }
     }
 
-    private void setUpInfoWindowClickable(){
-        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-            @Override
-            public void onInfoWindowClick(Marker marker) {
-                for(int i = 0; i < restaurants.size(); i++){
-                    if(restaurants.get(i).getName().equals(marker.getTitle())){
-                        Intent intent = SingleRestaurantInspection.makeIntent(GoogleMapActivity.this,
-                                restaurants.get(i));
-                        intent.putExtra("calling_activity", GOOGLE_MAPS_ACTIVITY_CALL_NUMBER);
-                        startActivity(intent);
-                    }
-                }
-            }
-        });
-    }
+//    private void setUpInfoWindowClickable(){
+//        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+//            @Override
+//            public void onInfoWindowClick(Marker marker) {
+//                for(int i = 0; i < restaurants.size(); i++){
+//                    if(restaurants.get(i).getName().equals(marker.getTitle())){
+//                        Intent intent = SingleRestaurantInspection.makeIntent(GoogleMapActivity.this,
+//                                restaurants.get(i));
+//                        intent.putExtra("calling_activity", GOOGLE_MAPS_ACTIVITY_CALL_NUMBER);
+//                        startActivity(intent);
+//                    }
+//                }
+//            }
+//        });
+//    }
 
     private String setSnippet(Restaurant restaurant){
         String snippet;
