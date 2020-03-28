@@ -454,9 +454,9 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
     }
 
     private void setUpInfoWindow(Restaurant restaurant){
-        mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(GoogleMapActivity.this));
         final Location targetLocation = new Location("");
         targetLocation.setLatitude(restaurant.getLatitude());
+
         targetLocation.setLongitude(restaurant.getLongitude());
         LatLng latLng = new LatLng(targetLocation.getLatitude(), targetLocation.getLongitude());
         float color = BitmapDescriptorFactory.HUE_BLUE;
@@ -548,21 +548,21 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         }
     }
 
-//    private void setUpInfoWindowClickable(){
-//        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-//            @Override
-//            public void onInfoWindowClick(Marker marker) {
-//                for(int i = 0; i < restaurants.size(); i++){
-//                    if(restaurants.get(i).getName().equals(marker.getTitle())){
-//                        Intent intent = SingleRestaurantInspection.makeIntent(GoogleMapActivity.this,
-//                                restaurants.get(i));
-//                        intent.putExtra("calling_activity", GOOGLE_MAPS_ACTIVITY_CALL_NUMBER);
-//                        startActivity(intent);
-//                    }
-//                }
-//            }
-//        });
-//    }
+    private void setUpInfoWindowClickable(){
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                for(int i = 0; i < restaurants.size(); i++){
+                    if(restaurants.get(i).getName().equals(marker.getTitle())){
+                        Intent intent = SingleRestaurantInspection.makeIntent(GoogleMapActivity.this,
+                                restaurants.get(i));
+                        intent.putExtra("calling_activity", GOOGLE_MAPS_ACTIVITY_CALL_NUMBER);
+                        startActivity(intent);
+                    }
+                }
+            }
+        });
+    }
 
     private String setSnippet(Restaurant restaurant){
         String snippet;
@@ -705,10 +705,14 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
     private void setUpClusters(){
         mClusterManager = new ClusterManager<>(this, mMap);
-        mClusterManager.setRenderer(new MarkerClusterRenderer(this, mMap, mClusterManager));
-        mClusterManager.setAnimation(false);
+        MarkerClusterRenderer markerClusterRenderer = new MarkerClusterRenderer(this, mMap, mClusterManager);
+        mClusterManager.setRenderer(markerClusterRenderer);
+        mMap.setInfoWindowAdapter(mClusterManager.getMarkerManager());
+        mClusterManager.getMarkerCollection().setInfoWindowAdapter((new CustomInfoWindowAdapter(GoogleMapActivity.this)));
+
         mMap.setOnCameraIdleListener(mClusterManager);
         mMap.setOnMarkerClickListener(mClusterManager);
+
         addItems();
     }
 
@@ -729,5 +733,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                     }
             }
         });
+
+
     }
 }
