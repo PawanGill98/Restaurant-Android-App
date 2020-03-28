@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -339,7 +340,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
             e.printStackTrace();
         }
 
-        FileOutputStream fos = null;
+        FileOutputStream fos;
         try {
             fos = openFileOutput(ASK_FOR_UPDATE, MODE_PRIVATE);
             BufferedWriter writer = new BufferedWriter( new OutputStreamWriter(fos, "UTF-8"));
