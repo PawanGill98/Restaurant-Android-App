@@ -450,7 +450,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
             setUpInfoWindow(restaurants.get(m));
             setUpInfoWindow(restaurants.get(n));
         }
-        setUpClusters();
+//        setUpClusters();
     }
 
     private void setUpInfoWindow(Restaurant restaurant){
@@ -468,7 +468,8 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 .title(getString(R.string.restaurant_name_on_map, restaurant.getName()))
                 .snippet(getString(R.string.snippet, setSnippet(restaurant)))
                 .icon(BitmapDescriptorFactory.defaultMarker(color));
-         mMarkerArray.add(new MyItem(options.getPosition(),options.getTitle(),options.getSnippet(),options.getIcon()));
+        mMap.addMarker(options);
+        mMarkerArray.add(new MyItem(options.getPosition(),options.getTitle(),options.getSnippet(),options.getIcon()));
     }
 
     private float setMarkerColor(float color, Inspection inspection){
@@ -700,31 +701,31 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
     }
 
-    private void setUpClusters(){
-        mClusterManager = new ClusterManager<>(this, mMap);
-        mClusterManager.setRenderer(new MarkerClusterRenderer(this, mMap, mClusterManager));
-        mClusterManager.setAnimation(false);
-        mMap.setOnCameraIdleListener(mClusterManager);
-        mMap.setOnMarkerClickListener(mClusterManager);
-        addItems();
-    }
-
-    private void addItems(){
-        mClusterManager.addItems(mMarkerArray);
-        mClusterManager.cluster();
-
-        mClusterManager.setOnClusterItemInfoWindowClickListener(new ClusterManager.OnClusterItemInfoWindowClickListener<MyItem>() {
-            @Override
-            public void onClusterItemInfoWindowClick(MyItem item) {
-                    for(int i = 0; i < restaurants.size(); i++){
-                        if(restaurants.get(i).getName().equals(item.getTitle())){
-                            Intent intent = SingleRestaurantInspection.makeIntent(GoogleMapActivity.this,
-                                    restaurants.get(i));
-                            intent.putExtra("calling_activity", GOOGLE_MAPS_ACTIVITY_CALL_NUMBER);
-                            startActivity(intent);
-                        }
-                    }
-            }
-        });
-    }
+//    private void setUpClusters(){
+//        mClusterManager = new ClusterManager<>(this, mMap);
+//        mClusterManager.setRenderer(new MarkerClusterRenderer(this, mMap, mClusterManager));
+//        mClusterManager.setAnimation(false);
+//        mMap.setOnCameraIdleListener(mClusterManager);
+//        mMap.setOnMarkerClickListener(mClusterManager);
+//        addItems();
+//    }
+//
+//    private void addItems(){
+//        mClusterManager.addItems(mMarkerArray);
+//        mClusterManager.cluster();
+//
+//        mClusterManager.setOnClusterItemInfoWindowClickListener(new ClusterManager.OnClusterItemInfoWindowClickListener<MyItem>() {
+//            @Override
+//            public void onClusterItemInfoWindowClick(MyItem item) {
+//                    for(int i = 0; i < restaurants.size(); i++){
+//                        if(restaurants.get(i).getName().equals(item.getTitle())){
+//                            Intent intent = SingleRestaurantInspection.makeIntent(GoogleMapActivity.this,
+//                                    restaurants.get(i));
+//                            intent.putExtra("calling_activity", GOOGLE_MAPS_ACTIVITY_CALL_NUMBER);
+//                            startActivity(intent);
+//                        }
+//                    }
+//            }
+//        });
+//    }
 }
