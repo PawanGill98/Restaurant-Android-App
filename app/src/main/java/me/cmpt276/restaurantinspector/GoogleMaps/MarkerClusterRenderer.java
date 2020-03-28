@@ -33,4 +33,8 @@ public class MarkerClusterRenderer extends DefaultClusterRenderer<MyItem> {
         super.onClusterItemRendered(clusterItem, marker);
     }
 
+    @Override
+    public Marker getMarker(MyItem clusterItem) {
+        return super.getMarker(clusterItem);
+    }
 }

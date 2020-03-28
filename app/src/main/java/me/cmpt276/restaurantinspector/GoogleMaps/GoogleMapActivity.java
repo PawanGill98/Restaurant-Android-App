@@ -454,9 +454,9 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
     }
 
     private void setUpInfoWindow(Restaurant restaurant){
-        mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(GoogleMapActivity.this));
         final Location targetLocation = new Location("");
         targetLocation.setLatitude(restaurant.getLatitude());
+
         targetLocation.setLongitude(restaurant.getLongitude());
         LatLng latLng = new LatLng(targetLocation.getLatitude(), targetLocation.getLongitude());
         float color = BitmapDescriptorFactory.HUE_BLUE;
@@ -514,18 +514,20 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                             Log.d(TAG, "onComplete: found location!");
                             Location currentLocation = (Location) task.getResult();
                             setAllRestaurantsLocations();
-                            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                                @Override
-                                public boolean onMarkerClick(Marker marker) {
-                                    setUpInfoWindowClickable();
-                                    return false;
-                                }
-                            });
+//                            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+//                                @Override
+//                                public boolean onMarkerClick(Marker marker) {
+//                                    //setUpInfoWindowClickable();///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                    return false;
+//                                }
+//                            });
                             callingActivity = getIntent().getDoubleArrayExtra("latitude/longitude");
+                            moveCamera(new LatLng(currentLocation.getLatitude(),
+                                    currentLocation.getLongitude()), DEFAULT_ZOOM);
                             if(callingActivity != null) {
                                 Log.d(TAG, "from other activity latitude: " + callingActivity[0]
                                         + " longitude: " + callingActivity[1]);
-                                moveCamera(new LatLng(callingActivity[0], callingActivity[1]), DEFAULT_ZOOM);
+                                moveCam(new LatLng(callingActivity[0], callingActivity[1]), DEFAULT_ZOOM);
                                 for(int i = 0; i < restaurants.size(); i++){
                                     if(callingActivity[0] == restaurants.get(i).getLatitude()
                                             && callingActivity[1] == restaurants.get(i).getLongitude()){
@@ -533,9 +535,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                                         setUpInfoWindow(restaurants.get(i));
                                     }
                                 }
-                            }else {
-                                moveCamera(new LatLng(currentLocation.getLatitude(),
-                                        currentLocation.getLongitude()), DEFAULT_ZOOM);
                             }
                         }else{
                             Log.d(TAG, "onComplete: current location is null");
@@ -588,6 +587,10 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 .title(getString(R.string.my_location_title))
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
         mMap.addMarker(marker);
+    }
+
+    private void moveCam(LatLng latLng, float zoom){
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
     }
 
     private void initMap(){
@@ -701,31 +704,37 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
     }
 
-//    private void setUpClusters(){
-//        mClusterManager = new ClusterManager<>(this, mMap);
-//        mClusterManager.setRenderer(new MarkerClusterRenderer(this, mMap, mClusterManager));
-//        mClusterManager.setAnimation(false);
-//        mMap.setOnCameraIdleListener(mClusterManager);
-//        mMap.setOnMarkerClickListener(mClusterManager);
-//        addItems();
-//    }
-//
-//    private void addItems(){
-//        mClusterManager.addItems(mMarkerArray);
-//        mClusterManager.cluster();
-//
-//        mClusterManager.setOnClusterItemInfoWindowClickListener(new ClusterManager.OnClusterItemInfoWindowClickListener<MyItem>() {
-//            @Override
-//            public void onClusterItemInfoWindowClick(MyItem item) {
-//                    for(int i = 0; i < restaurants.size(); i++){
-//                        if(restaurants.get(i).getName().equals(item.getTitle())){
-//                            Intent intent = SingleRestaurantInspection.makeIntent(GoogleMapActivity.this,
-//                                    restaurants.get(i));
-//                            intent.putExtra("calling_activity", GOOGLE_MAPS_ACTIVITY_CALL_NUMBER);
-//                            startActivity(intent);
-//                        }
-//                    }
-//            }
-//        });
-//    }
+    private void setUpClusters(){
+        mClusterManager = new ClusterManager<>(this, mMap);
+        MarkerClusterRenderer markerClusterRenderer = new MarkerClusterRenderer(this, mMap, mClusterManager);
+        mClusterManager.setRenderer(markerClusterRenderer);
+        mMap.setInfoWindowAdapter(mClusterManager.getMarkerManager());
+        mClusterManager.getMarkerCollection().setInfoWindowAdapter((new CustomInfoWindowAdapter(GoogleMapActivity.this)));
+
+        mMap.setOnCameraIdleListener(mClusterManager);
+        mMap.setOnMarkerClickListener(mClusterManager);
+
+        addItems();
+    }
+
+    private void addItems(){
+        mClusterManager.addItems(mMarkerArray);
+        mClusterManager.cluster();
+
+        mClusterManager.setOnClusterItemInfoWindowClickListener(new ClusterManager.OnClusterItemInfoWindowClickListener<MyItem>() {
+            @Override
+            public void onClusterItemInfoWindowClick(MyItem item) {
+                    for(int i = 0; i < restaurants.size(); i++){
+                        if(restaurants.get(i).getName().equals(item.getTitle())){
+                            Intent intent = SingleRestaurantInspection.makeIntent(GoogleMapActivity.this,
+                                    restaurants.get(i));
+                            intent.putExtra("calling_activity", GOOGLE_MAPS_ACTIVITY_CALL_NUMBER);
+                            startActivity(intent);
+                        }
+                    }
+            }
+        });
+
+
+    }
 }
