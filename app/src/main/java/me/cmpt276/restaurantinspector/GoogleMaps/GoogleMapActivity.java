@@ -450,7 +450,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
             setUpInfoWindow(restaurants.get(m));
             setUpInfoWindow(restaurants.get(n));
         }
-        setUpClusters();
+//        setUpClusters();
     }
 
     private void setUpInfoWindow(Restaurant restaurant){
@@ -468,7 +468,8 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 .title(getString(R.string.restaurant_name_on_map, restaurant.getName()))
                 .snippet(getString(R.string.snippet, setSnippet(restaurant)))
                 .icon(BitmapDescriptorFactory.defaultMarker(color));
-         mMarkerArray.add(new MyItem(options.getPosition(),options.getTitle(),options.getSnippet(),options.getIcon()));
+        mMap.addMarker(options);
+        mMarkerArray.add(new MyItem(options.getPosition(),options.getTitle(),options.getSnippet(),options.getIcon()));
     }
 
     private float setMarkerColor(float color, Inspection inspection){
@@ -513,13 +514,13 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                             Log.d(TAG, "onComplete: found location!");
                             Location currentLocation = (Location) task.getResult();
                             setAllRestaurantsLocations();
-//                            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-//                                @Override
-//                                public boolean onMarkerClick(Marker marker) {
-//                                    //setUpInfoWindowClickable();///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//                                    return false;
-//                                }
-//                            });
+                            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                                @Override
+                                public boolean onMarkerClick(Marker marker) {
+                                    setUpInfoWindowClickable();
+                                    return false;
+                                }
+                            });
                             callingActivity = getIntent().getDoubleArrayExtra("latitude/longitude");
                             moveCamera(new LatLng(currentLocation.getLatitude(),
                                     currentLocation.getLongitude()), DEFAULT_ZOOM);

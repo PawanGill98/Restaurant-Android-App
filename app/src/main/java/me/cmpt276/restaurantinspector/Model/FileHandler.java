@@ -72,7 +72,6 @@ public class FileHandler {
     }
     public static String readInspectionsDateModified() throws IOException, JSONException {
         JSONObject jsonFile = readJsonFromUrl("https://data.surrey.ca/api/3/action/package_show?id=fraser-health-restaurant-inspection-reports");
-       // System.out.println(json.toString());
         JSONObject result = jsonFile.getJSONObject("result");
         JSONArray resourcesArray = (JSONArray) result.get("resources");
         JSONObject resourcesArrayFirstElement = resourcesArray.getJSONObject(0);
