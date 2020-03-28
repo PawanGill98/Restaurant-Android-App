@@ -57,6 +57,7 @@ public class SingleRestaurantInspection extends AppCompatActivity {
                     intent.putExtra("latitude/longitude"
                             , new double[]{restaurant.getLatitude(), restaurant.getLongitude()});
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.putExtra("fetch_data", "no_fetch");
                     startActivity(intent);
                 }
             }
