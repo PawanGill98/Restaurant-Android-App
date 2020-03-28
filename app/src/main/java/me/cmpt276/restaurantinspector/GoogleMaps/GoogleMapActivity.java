@@ -513,13 +513,13 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                             Log.d(TAG, "onComplete: found location!");
                             Location currentLocation = (Location) task.getResult();
                             setAllRestaurantsLocations();
-//                            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-//                                @Override
-//                                public boolean onMarkerClick(Marker marker) {
-//                                    //setUpInfoWindowClickable();///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//                                    return false;
-//                                }
-//                            });
+                            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                                @Override
+                                public boolean onMarkerClick(Marker marker) {
+                                    setUpInfoWindowClickable();
+                                    return false;
+                                }
+                            });
                             callingActivity = getIntent().getDoubleArrayExtra("latitude/longitude");
                             moveCamera(new LatLng(currentLocation.getLatitude(),
                                     currentLocation.getLongitude()), DEFAULT_ZOOM);
