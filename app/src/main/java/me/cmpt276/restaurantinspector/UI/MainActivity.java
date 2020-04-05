@@ -176,9 +176,24 @@ public class MainActivity extends AppCompatActivity {
                         + currentRestaurant.getInspections().get(0).getNumCritical();
                 TextView issues = itemView.findViewById(R.id.item_issues);
                 issues.setText(getString(R.string.total_issues, totalIssues));
+
                 TextView date = itemView.findViewById(R.id.item_date);
-                date.setText(getString(R.string.current_restaurant_date,
-                        currentRestaurant.getInspections().get(0).getHowLongAgo()));
+                if(currentRestaurant.getInspections().get(0).getHowLongAgo().contains("days ago")){
+                    int i = 0;
+                    String temp = "";
+                    while(currentRestaurant.getInspections().get(0).getHowLongAgo().charAt(i) != ' '){
+                        temp += currentRestaurant.getInspections().get(0).getHowLongAgo().charAt(i);
+                        i++;
+                    }
+                    temp += " ";
+                    temp += getString(R.string.days_ago_for_date);
+                    date.setText(getString(R.string.current_restaurant_date,
+                            temp));
+                }else {
+                    date.setText(getString(R.string.current_restaurant_date,
+                            currentRestaurant.getInspections().get(0).getHowLongAgo()));
+                }
+
 
             } else{
                 Log.d("Inside else", currentRestaurant.getName());

@@ -545,11 +545,14 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
     private String setSnippet(Restaurant restaurant){
         String snippet;
         if(!restaurant.getInspections().isEmpty()) {
-            snippet = "Address: " + restaurant.getAddress() + "\n" +
-                    "Hazard level: " + restaurant.getInspections().get(0).getHazardRating();
+            snippet = getString(R.string.restaurant_address_popup, restaurant.getAddress());
+            snippet += "\n";
+            snippet += getString(R.string.hazard_level_popup, restaurant.getInspections().get(0).getHazardRating());
         }else{
-            snippet = "Address: " + restaurant.getAddress() + "\n" +
-                    "No inspections happened in this restaurant";
+            snippet = getString(R.string.restaurant_address_popup, restaurant.getAddress());
+            snippet += "\n";
+            snippet += getString(R.string.no_inspection_happened);
+
         }
         return snippet;
     }

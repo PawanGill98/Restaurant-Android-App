@@ -2,8 +2,10 @@ package me.cmpt276.restaurantinspector.UI;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -143,11 +145,17 @@ public class InspectionActivity extends AppCompatActivity {
             TextView idText = itemView.findViewById(R.id.violation_id_view);
             idText.setText(getString(R.string.violation_id, currentViolation.getId()));
 
+            String violationNumberId = "violation_" + currentViolation.getId();
             TextView briefText = itemView.findViewById(R.id.brief_desc_view);
-            briefText.setText(currentViolation.getBriefDescription());
-
+            String briefViolationText = getStringByIdName(InspectionActivity.this,
+                    violationNumberId);
+            briefText.setText(briefViolationText);
             return itemView;
         }
+    }
+    public static String getStringByIdName(Context context, String idName) {
+        Resources res = context.getResources();
+        return res.getString(res.getIdentifier(idName, "string", context.getPackageName()));
     }
 
     public static Intent makeIntent(Context context, Inspection inspection, String restaurantName){

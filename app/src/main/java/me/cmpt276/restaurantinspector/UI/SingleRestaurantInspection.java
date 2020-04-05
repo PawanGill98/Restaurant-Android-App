@@ -122,7 +122,20 @@ public class SingleRestaurantInspection extends AppCompatActivity {
             view.setText(getString(R.string.number_non_critical_issues,
                     restaurant.getInspections().get(position).getNumNonCritical()));
             view = itemView.findViewById(R.id.screen2_inspection_date);
-            view.setText(restaurant.getInspections().get(position).getHowLongAgo());
+            if(restaurant.getInspections().get(position).getHowLongAgo().contains("days ago")){
+                int i = 0;
+                String temp = "";
+                while(restaurant.getInspections().get(0).getHowLongAgo().charAt(i) != ' '){
+                    temp += restaurant.getInspections().get(0).getHowLongAgo().charAt(i);
+                    i++;
+                }
+                temp += " ";
+                temp += getString(R.string.days_ago_for_date);
+                view.setText(getString(R.string.current_restaurant_date,
+                        temp));
+            }else {
+                view.setText(restaurant.getInspections().get(position).getHowLongAgo());
+            }
             parent.setBackgroundColor(getResources().getColor(R.color.beige));
             return itemView;
         }
