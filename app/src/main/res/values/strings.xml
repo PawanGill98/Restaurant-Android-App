@@ -11,14 +11,12 @@
     <string name="number_critical_issues">%1$d critical issues found</string>
     <string name="number_non_critical_issues">%1$d non-critical issues found</string>
     <string name="date">date</string>
-    <string name="no_violations_found_this_place_is_safe_to_visit">No violations found! This place is safe to visit.</string>
     <string name="total_issues">Issues: %1$d</string>
     <string name="current_restaurant_date">%1$s</string>
     <string name="no_inspections">There are no inspections yet</string>
     <string name="empty_string" />
     <string name="issues">Issues:</string>
     <string name="days_ago">Days Ago:</string>
-    <string name="currently_there_is_no_inspections_happened_in_this_restaurant">Currently there is no inspections happened in this restaurant</string>
     <string name="number_of_critical">%1$d</string>
     <string name="number_of_non_critical">%1$d</string>
     <string name="hazard_rating">%1$s</string>
@@ -35,5 +33,49 @@
     <string name="restaurant_name_on_map">%1$s</string>
     <string name="my_location_title">My Location</string>
     <string name="snippet">%1$s</string>
+    <string name="map">Map</string>
+    <string name="restaurants">Restaurants</string>
+    <string name="days_ago_for_date">days ago</string>
+    <string name="restaurant_address_popup">Address: %1$s</string>
+    <string name="hazard_level_popup">Hazard level: %1$s</string>
+    <string name="no_inspection_happened">No inspections happened in this restaurant</string>
+
+    <string name="violation_101">Building regulations not followed</string>
+    <string name="violation_102">Unapproved food premise</string>
+    <string name="violation_103">No valid permit to operate</string>
+    <string name="violation_104">No visible permit</string>
+    <string name="violation_201">Food contamination</string>
+    <string name="violation_202">Unsafe food</string>
+    <string name="violation_203">Cooling violation</string>
+    <string name="violation_204">Cooking/Heating violation</string>
+    <string name="violation_205">Cold hazardous food</string>
+    <string name="violation_206">Hot hazardous food</string>
+    <string name="violation_208">Unapproved food sources</string>
+    <string name="violation_209">Unprotected food</string>
+    <string name="violation_210">Unacceptable thawing</string>
+    <string name="violation_211">Frozen hazardous food</string>
+    <string name="violation_212">Unapproved handling procedures</string>
+    <string name="violation_301">Unsanitary conditions</string>
+    <string name="violation_302">Unsanitized equipment</string>
+    <string name="violation_303">Unsanitary water</string>
+    <string name="violation_304">Not free of pests</string>
+    <string name="violation_305">Open to pests</string>
+    <string name="violation_306">Unsanitary food premises</string>
+    <string name="violation_307">Unsuitable equipment</string>
+    <string name="violation_308">Equipment in bad working condition</string>
+    <string name="violation_309">Improper storage of chemicals</string>
+    <string name="violation_310">One-time containers used frequently</string>
+    <string name="violation_311">Premises not maintained</string>
+    <string name="violation_312">Unrelated item storage</string>
+    <string name="violation_313">Live animal on premise</string>
+    <string name="violation_314">Unacceptable sanitation procedures</string>
+    <string name="violation_315">Inaccurate refrigerator thermometers</string>
+    <string name="violation_401">Inadequate hand washing station</string>
+    <string name="violation_402">Employee hand washing violation</string>
+    <string name="violation_403">Employee hygiene violation</string>
+    <string name="violation_404">Employee smoking on premises</string>
+    <string name="violation_501">Operator has inadequate certification</string>
+    <string name="violation_502">Staff has inadequate certification</string>
+
 
 </resources>
