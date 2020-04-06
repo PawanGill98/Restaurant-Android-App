@@ -16,11 +16,13 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -364,6 +366,10 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         setUpMapFragmentSupport();
     }
 
+    public String getInternalName(String string) {
+        return string.replaceAll("[\\\\|<|>|\"|?|/|*|\\||:]", "");
+    }
+
     private void setupDialog() {
         dialog = new Dialog(GoogleMapActivity.this);
         dialog.setContentView(R.layout.message_layout);
@@ -387,8 +393,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                         createdInspectionsFile.delete();
                     }
                 }
-
-
                 dialog.findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
                 dialog.dismiss();
             }
@@ -401,6 +405,61 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
             public void onClick(View v) {
                 if (button_update.getText().equals("Done")) {
                     dialog.dismiss();
+                    String desc = "";
+                    for (Restaurant restaurant : restaurantManager.getRestaurants()) {
+                        if (checkFileExists(getInternalName(restaurant.getAddress()+restaurant.getName()) + ".txt")) {
+
+                            int numberInspectionsOnFile;
+                            InputStream inp = null;
+                            try {
+                                inp = openFileInput(getInternalName(restaurant.getAddress()+restaurant.getName()) + ".txt");
+                                BufferedReader bufreader = new BufferedReader(new InputStreamReader(inp, Charset.forName("UTF-8")));
+                                numberInspectionsOnFile = Integer.parseInt(bufreader.readLine());
+                                bufreader.close();
+
+
+
+                                if (restaurant.getInspections().size() != numberInspectionsOnFile) {
+                                    desc = desc + "\n";
+                                    desc = desc + "Restaurant: " + restaurant.getName() + "\n";
+                                    desc = desc + "Address: " + restaurant.getAddress() + "\n";
+                                    desc = desc + "Most recent inspection: " + restaurant.getInspections().get(0).getFullInspectionDate() + "\n";
+                                    desc = desc + "Hazard rating: " + restaurant.getInspections().get(0).getHazardRating() + "\n";
+                                    FileOutputStream fos = openFileOutput(getInternalName(restaurant.getAddress()+restaurant.getName()) + ".txt", MODE_PRIVATE);
+                                    BufferedWriter writer = new BufferedWriter( new OutputStreamWriter(fos, "UTF-8"));
+                                    FileHandler.writeToInternalMemory(writer, restaurant.getInspections().size() + "");
+                                    writer.close();
+                                }
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    }
+
+
+
+                    if (!desc.equals("")) {
+                        dialog = new Dialog(GoogleMapActivity.this);
+                        dialog.setContentView(R.layout.favorites_message_layout);
+                        dialog.setCancelable(false);
+                        final Button button_dismiss = dialog.findViewById(R.id.button_dismiss);
+                        button_dismiss.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                        TextView myTextView = (TextView) dialog.findViewById(R.id.update_updatedtextview);
+                        //myTextView.setMovementMethod(new ScrollingMovementMethod());
+                        Log.d("Wef", "nig " + desc);
+                        myTextView.setText(desc);
+
+                        dialog.show();
+                    }
                 }
                 else {
                     csvUpdater = new CSVUpdater();

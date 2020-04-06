@@ -3,6 +3,7 @@ package me.cmpt276.restaurantinspector.UI;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +18,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
     private RestaurantManager restaurantManager;
     private List<Restaurant> myRestaurants;
 
+    private static final String LIST_STATE = "listState";
+    private Parcelable mListState = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,8 +57,39 @@ public class MainActivity extends AppCompatActivity {
         setUpBottomNavigation();
     }
 
+    // Reference: https://stackoverflow.com/questions/3014089/maintain-save-restore-scroll-position-when-returning-to-a-listview
+    @Override
+    public void onResume() {
+        super.onResume();
+        restaurantManager = RestaurantManager.getInstance();
+        myRestaurants = restaurantManager.getRestaurants();
+        populateListView();
+        registerClickCallBack();
+        setUpBottomNavigation();
+        ListView list = (ListView)findViewById(R.id.restaurantListView);
+        if (mListState != null)
+            list.onRestoreInstanceState(mListState);
+        mListState = null;
+    }
+    @Override
+    protected void onRestoreInstanceState(Bundle state) {
+        super.onRestoreInstanceState(state);
+        mListState = state.getParcelable(LIST_STATE);
+    }
 
 
+    @Override
+    protected void onSaveInstanceState(Bundle state) {
+        super.onSaveInstanceState(state);
+        ListView list = (ListView)findViewById(R.id.restaurantListView);
+        mListState = list.onSaveInstanceState();
+        state.putParcelable(LIST_STATE, mListState);
+    }
+
+    public boolean checkFileExists(String fname){
+        File file = getBaseContext().getFileStreamPath(fname);
+        return file.exists();
+    }
 
     private void setUpBottomNavigation(){
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -132,6 +169,10 @@ public class MainActivity extends AppCompatActivity {
         return RestaurantIcon;
     }
 
+    public String getInternalName(String string) {
+        return string.replaceAll("[\\\\|<|>|\"|?|/|*|\\||:]", "");
+    }
+
     private class MyListAdapter extends ArrayAdapter<Restaurant> {
         public MyListAdapter() {
             super(MainActivity.this, R.layout.restaurant_view, myRestaurants);
@@ -191,8 +232,16 @@ public class MainActivity extends AppCompatActivity {
                 ImageView imageView = itemView.findViewById(R.id.item_hazardIcon);
                 imageView.setImageDrawable(getResources().getDrawable(R.drawable.hazard));
             }
+            if (checkFileExists(getInternalName(currentRestaurant.getAddress()+currentRestaurant.getName()) + ".txt")) {
+                ImageView favoritedImage = itemView.findViewById(R.id.image_showFavorite);
+                favoritedImage.setVisibility(View.VISIBLE);
+            } else {
+                ImageView favoritedImage = itemView.findViewById(R.id.image_showFavorite);
+                favoritedImage.setVisibility(View.INVISIBLE);
+            }
             return itemView;
         }
+
     }
 
     private void registerClickCallBack() {
