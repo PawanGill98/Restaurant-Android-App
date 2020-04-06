@@ -24,8 +24,8 @@
         android:id="@+id/screen2_restaurant_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:layout_marginTop="16dp"
+        android:gravity="center"
         android:text="@string/restaurant_name"
         android:textColor="@android:color/background_dark"
         android:textSize="20sp"
@@ -38,8 +38,8 @@
         android:id="@+id/screen2_restaurant_address"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:layout_marginTop="16dp"
+        android:gravity="center"
         android:text="@string/restaurant_address"
         android:textColor="@android:color/background_dark"
         android:textSize="20sp"
@@ -52,8 +52,8 @@
         android:id="@+id/screen2_gps_coords"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:layout_marginTop="16dp"
+        android:gravity="center"
         android:text="@string/gps_coords"
         android:textColor="@android:color/background_dark"
         android:textSize="20sp"
@@ -72,7 +72,19 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/screen2_gps_coords"/>
+        app:layout_constraintTop_toBottomOf="@+id/screen2_gps_coords" />
+
+    <ImageView
+        android:id="@+id/imageview_favorites"
+        android:layout_width="77dp"
+        android:layout_height="54dp"
+        android:layout_marginStart="350dp"
+        android:layout_marginLeft="350dp"
+        android:layout_marginTop="44dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/add_favorites" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -12,13 +12,22 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 
 import me.cmpt276.restaurantinspector.GoogleMaps.GoogleMapActivity;
+import me.cmpt276.restaurantinspector.Model.FileHandler;
 import me.cmpt276.restaurantinspector.Model.Inspection;
 import me.cmpt276.restaurantinspector.Model.Restaurant;
 import me.cmpt276.restaurantinspector.R;
@@ -41,6 +50,73 @@ public class SingleRestaurantInspection extends AppCompatActivity {
         populateListView();
         registerClickCallBack();
         setUpTextViewClick();
+        setupFavoriteImage();
+        setupFavoriteClick();
+    }
+
+    public boolean checkFileExists(String fname){
+        File file = getBaseContext().getFileStreamPath(fname);
+        return file.exists();
+    }
+
+    public void deleteInternalFile(String fname) {
+        if (checkFileExists(fname)) {
+            File file = new File(getFilesDir(), fname);
+            file.delete();
+        }
+    }
+
+    public String getInternalName(String string) {
+        return string.replaceAll("[\\\\|<|>|\"|?|/|*|\\||:]", "");
+    }
+
+    // Reference: https://stackoverflow.com/questions/6496725/how-to-immediately-replace-the-current-toast-with-a-second-one-without-waiting-f
+    Toast m_currentToast;
+    void showToast(String text) {
+        if(m_currentToast != null) {
+            m_currentToast.cancel();
+        }
+        m_currentToast = Toast.makeText(this, text, Toast.LENGTH_SHORT);
+        m_currentToast.show();
+    }
+
+    public void setupFavoriteImage() {
+        ImageView favoriteImage = (ImageView) findViewById(R.id.imageview_favorites);
+        if (checkFileExists(getInternalName(restaurant.getAddress()+restaurant.getName()) + ".txt")) {
+            favoriteImage.setImageResource(R.drawable.remove_favorites);
+        }
+    }
+
+    public void setupFavoriteClick() {
+        final ImageView favoriteImage = (ImageView) findViewById(R.id.imageview_favorites);
+
+        favoriteImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                if (checkFileExists(getInternalName(restaurant.getAddress()+restaurant.getName()) + ".txt")) {
+                    deleteInternalFile(getInternalName(restaurant.getAddress()+restaurant.getName()) + ".txt");
+                    favoriteImage.setImageResource(R.drawable.add_favorites);
+                    showToast("Removed " + restaurant.getName() + " from favorites");
+                }
+                else {
+                    try {
+                        FileOutputStream fos = openFileOutput(getInternalName(restaurant.getAddress()+restaurant.getName()) + ".txt", MODE_PRIVATE);
+                        BufferedWriter buf = new BufferedWriter( new OutputStreamWriter(fos, "UTF-8"));
+                        FileHandler.writeToInternalMemory(buf, restaurant.getInspections().size() + "");
+                        buf.close();
+                        favoriteImage.setImageResource(R.drawable.remove_favorites);
+                        showToast("Added " + restaurant.getName() + " to favorites");
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
     }
 
     private void setUpTextViewClick(){

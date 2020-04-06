@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="24dp"
-    tools:context=".UI.MainActivity"
+    tools:context=".GoogleMaps.GoogleMapActivity"
     tools:layout_editor_absoluteY="81dp">
 
 
@@ -71,6 +71,7 @@
 
     <TextView
         android:id="@+id/textview_title"
+
         android:layout_width="280dp"
         android:layout_height="40dp"
         android:text="New update available!"
