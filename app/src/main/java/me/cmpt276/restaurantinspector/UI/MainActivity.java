@@ -47,10 +47,12 @@ public class MainActivity extends AppCompatActivity {
     private List<Restaurant> myRestaurants;
     private Map<String, Integer> hashMap;
     List<Restaurant> currentFilterResults;
+    List<Restaurant> searchResults;
     String[] hazardList;
     boolean[] checkedItems;
     private static final String LIST_STATE = "listState";
     private Parcelable mListState = null;
+    SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         restaurantManager = RestaurantManager.getInstance();
         myRestaurants = restaurantManager.getRestaurants();
+        currentFilterResults = restaurantManager.getRestaurants();
+        searchResults = currentFilterResults;
         hashMap = new HashMap<>();
         hazardList = new String[]{getString(R.string.filter_hazard_low), getString(R.string.filter_hazard_moderate)
                 ,getString(R.string.filter_hazard_high), getString(R.string.filter_favorites)};
@@ -72,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
         MenuItem menuItem = menu.findItem(R.id.search_view);
-        SearchView searchView = (SearchView) menuItem.getActionView();
+        searchView = (SearchView) menuItem.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
@@ -81,13 +85,13 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String s) {
-                List<Restaurant> restaurantResults = new ArrayList<>();
-                for(Restaurant x: myRestaurants){
+                searchResults = new ArrayList<>();
+                for(Restaurant x: currentFilterResults){
                     if(x.getName().toLowerCase().contains(s.toLowerCase())){
-                        restaurantResults.add(x);
+                        searchResults.add(x);
                     }
                 }
-                populateListView(restaurantResults);
+                populateListView(searchResults);
                 return false;
             }
         });
@@ -120,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(DialogInterface dialogInterface, int which) {
                     currentFilterResults = new ArrayList<>();
                     for(Restaurant x: myRestaurants) {
+
                         if(checkedItems[3] && isFavourite(x) && isLessThanNCritical(x, lessThanNCriticalInput.getText().toString())) {
                             filterHazardLevel(x);
                             if(!checkedItems[0] && !checkedItems[1] && !checkedItems[2]) {
@@ -131,6 +136,9 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                     populateListView(currentFilterResults);
+                    CharSequence temp = searchView.getQuery();
+                    searchView.setQuery("", true);
+                    searchView.setQuery(temp, true);
                 }
             });
 
@@ -145,6 +153,8 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int which) {
                     checkedItems = new boolean[] {true, true, true, false};
+                    currentFilterResults = myRestaurants;
+                    searchResults = myRestaurants;
                     populateListView(myRestaurants);
                 }
             });
