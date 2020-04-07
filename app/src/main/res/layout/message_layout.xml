@@ -21,7 +21,7 @@
         android:layout_weight="0"
         android:background="@color/cardview_light_background"
         android:stateListAnimator="@null"
-        android:text="Cancel"
+        android:text="@string/cancel"
         android:textColor="@color/colorPrimary"
         app:layout_constraintEnd_toStartOf="@+id/button_update"
         app:layout_constraintStart_toStartOf="parent"
@@ -53,7 +53,7 @@
         android:layout_marginRight="52dp"
         android:layout_weight="0"
         android:background="@color/colorPrimary"
-        android:text="Update"
+        android:text="@string/update"
         android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -64,7 +64,7 @@
         android:layout_height="wrap_content"
 
         android:layout_marginTop="64dp"
-        android:text="An update is available to download. Downloading will update restaurants and inspections to the latest data available from the City of Surrey."
+        android:text="@string/update_message"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -74,7 +74,7 @@
 
         android:layout_width="280dp"
         android:layout_height="40dp"
-        android:text="New update available!"
+        android:text="@string/new_update_available"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         android:textColor="@color/BLACK"
         android:textSize="26sp"

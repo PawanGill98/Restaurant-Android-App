@@ -59,7 +59,8 @@ public class MainActivity extends AppCompatActivity {
         restaurantManager = RestaurantManager.getInstance();
         myRestaurants = restaurantManager.getRestaurants();
         hashMap = new HashMap<>();
-        hazardList = new String[]{"Low Hazard Level", "Moderate Hazard Level", "High Hazard Level", "Favourites"};
+        hazardList = new String[]{getString(R.string.filter_hazard_low), getString(R.string.filter_hazard_moderate)
+                ,getString(R.string.filter_hazard_high), getString(R.string.filter_favorites)};
         checkedItems = new boolean[] {true, true, true, false};
         setUpBottomNavigation();
         setupToolBar();
@@ -98,11 +99,11 @@ public class MainActivity extends AppCompatActivity {
         if(item.getItemId() == R.id.options){
 
             AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
-            mBuilder.setTitle("Options");
+            mBuilder.setTitle(getString(R.string.option_title));
 
             final EditText lessThanNCriticalInput = new EditText(MainActivity.this);
             lessThanNCriticalInput.setInputType(InputType.TYPE_CLASS_NUMBER);
-            lessThanNCriticalInput.setHint("Critical Issues Less than: N");
+            lessThanNCriticalInput.setHint(getString(R.string.hint));
             mBuilder.setView(lessThanNCriticalInput);
 
             mBuilder.setMultiChoiceItems(hazardList, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
             mBuilder.setCancelable(false);
 
-            mBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            mBuilder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int which) {
                     currentFilterResults = new ArrayList<>();
@@ -133,14 +134,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            mBuilder.setNegativeButton("DISMISS", new DialogInterface.OnClickListener() {
+            mBuilder.setNegativeButton(getString(R.string.dismiss), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     dialogInterface.dismiss();
                 }
             });
 
-            mBuilder.setNeutralButton("CLEAR", new DialogInterface.OnClickListener() {
+            mBuilder.setNeutralButton(getString(R.string.clear), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int which) {
                     checkedItems = new boolean[] {true, true, true, false};
@@ -202,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
         restaurantManager = RestaurantManager.getInstance();
         myRestaurants = restaurantManager.getRestaurants();
         setUpBottomNavigation();
-        ListView list = (ListView)findViewById(R.id.restaurantListView);
+        ListView list = findViewById(R.id.restaurantListView);
         if (mListState != null)
             list.onRestoreInstanceState(mListState);
         mListState = null;
@@ -217,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle state) {
         super.onSaveInstanceState(state);
-        ListView list = (ListView)findViewById(R.id.restaurantListView);
+        ListView list = findViewById(R.id.restaurantListView);
         mListState = list.onSaveInstanceState();
         state.putParcelable(LIST_STATE, mListState);
     }

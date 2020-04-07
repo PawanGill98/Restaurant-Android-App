@@ -24,7 +24,7 @@
     <string name="violation_id">%1$d</string>
     <string name="brief_desc">%1$s</string>
     <string name="inspection_type">%1$s</string>
-    <string name="hazard_rating_view">Рейтинг опасности: </string>
+    <string name="hazard_rating_view">Уровень опасности: </string>
     <string name="inspection_date_view">Дата инспекции: </string>
     <string name="inspection_type_view">Тип инспекции: </string>
     <string name="num_critical_issues_view">Найденное кол-во крит. нарушений: </string>
@@ -40,6 +40,25 @@
     <string name="restaurant_address_popup">Адрес: %1$s</string>
     <string name="hazard_level_popup">Уровень опасности: %1$s</string>
     <string name="no_inspection_happened">В этом ресторане не проводилось инспекций</string>
+    <string name="filter_hazard_low">Низкий уровень опастности</string>
+    <string name="filter_hazard_moderate">Умереный уровень опасности</string>
+    <string name="filter_hazard_high">Высокий уровень опасности</string>
+    <string name="filter_favorites">Избранные</string>
+    <string name="search_view">поискВид</string>
+    <string name="options">Опции</string>
+    <string name="cancel">Отмена</string>
+    <string name="update">Обновить</string>
+    <string name="new_update_available">Доступно новое обновление!</string>
+    <string name="update_message">Обновление доступно для скачивания.
+        Скачивание обновит рестораны и инспекции до новейших данных доступных в городе Сюррей.</string>
+    <string name="dismiss">Отклонить</string>
+    <string name="new_inspections">Новые инспекции!</string>
+    <string name="fav_inspections">
+        Новые ипспекции доступны для ваших любимых ресторанов:</string>
+    <string name="option_title">Опции</string>
+    <string name="hint">Кол-во. крит. ошибок меньше чем: Х</string>
+    <string name="clear">Отмена</string>
+    <string name="ok">OK</string>
 
     <string name="violation_101">Строительные нормы не соблюдены</string>
     <string name="violation_102">Неутвержденное помещение для пищи</string>

@@ -39,6 +39,25 @@
     <string name="restaurant_address_popup">Address: %1$s</string>
     <string name="hazard_level_popup">Hazard level: %1$s</string>
     <string name="no_inspection_happened">No inspections happened in this restaurant</string>
+    <string name="filter_hazard_low">Low Hazard Level</string>
+    <string name="filter_hazard_moderate">Moderate Hazard Level</string>
+    <string name="filter_hazard_high">High Hazard Level</string>
+    <string name="filter_favorites">Favorites</string>
+    <string name="search_view">searchView</string>
+    <string name="options">Options</string>
+    <string name="cancel">Cancel</string>
+    <string name="update">Update</string>
+    <string name="new_update_available">New update available!</string>
+    <string name="update_message">An update is available to download. Downloading will update
+        restaurants and inspections to the latest data available from the City of Surrey.</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="new_inspections">New inspections!</string>
+    <string name="fav_inspections">
+        New inspections are available for your favourite restaurants:</string>
+    <string name="option_title">Options</string>
+    <string name="hint">Critical Issues Less than: N</string>
+    <string name="clear">Clear</string>
+    <string name="ok">OK</string>
 
     <string name="violation_101">Building regulations not followed</string>
     <string name="violation_102">Unapproved food premise</string>
