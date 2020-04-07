@@ -481,9 +481,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         }
     }
 
-
-
-
     private void onBackgroundTaskDataObtained(String results, String results2) {
         if (csvUpdater.isCancelled()) {
             return;
