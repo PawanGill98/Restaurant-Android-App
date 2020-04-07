@@ -27,5 +27,4 @@
         app:itemTextColor="@drawable/selector"
         app:menu="@menu/menu_navigation" />
 
-
 </RelativeLayout>
