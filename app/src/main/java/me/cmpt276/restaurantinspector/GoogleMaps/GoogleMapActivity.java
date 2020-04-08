@@ -149,7 +149,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_google_map);
-        setTitle("Map of Restaurants");
+        setTitle(getString(R.string.title_for_map_of_restaurant));
         Bundle extras = getIntent().getExtras();
         setupDialog();
         String fetch = "";
@@ -520,7 +520,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
             return;
         }
         Button button = dialog.findViewById(R.id.button_update);
-        button.setText("Done");
+        button.setText(getString(R.string.done));
         dialog.findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
         final Button button2 = dialog.findViewById(R.id.button_cancel);
         button2.setVisibility(View.INVISIBLE);

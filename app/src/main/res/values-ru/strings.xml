@@ -60,6 +60,8 @@
     <string name="clear">Отмена</string>
     <string name="ok">OK</string>
     <string name="search_hint">Введите запрос!</string>
+    <string name="title_for_map_of_restaurant">Карта ресторанов</string>
+    <string name="done">Готово</string>
 
 
     <string name="violation_101">Строительные нормы не соблюдены</string>
