@@ -70,25 +70,15 @@ public class SingleRestaurantInspection extends AppCompatActivity {
         return string.replaceAll("[\\\\|<|>|\"|?|/|*|\\||:]", "");
     }
 
-    // Reference: https://stackoverflow.com/questions/6496725/how-to-immediately-replace-the-current-toast-with-a-second-one-without-waiting-f
-    Toast m_currentToast;
-    void showToast(String text) {
-        if(m_currentToast != null) {
-            m_currentToast.cancel();
-        }
-        m_currentToast = Toast.makeText(this, text, Toast.LENGTH_SHORT);
-        m_currentToast.show();
-    }
-
     public void setupFavoriteImage() {
-        ImageView favoriteImage = (ImageView) findViewById(R.id.imageview_favorites);
+        ImageView favoriteImage = findViewById(R.id.imageview_favorites);
         if (checkFileExists(getInternalName(restaurant.getAddress()+restaurant.getName()) + ".txt")) {
             favoriteImage.setImageResource(R.drawable.remove_favorites);
         }
     }
 
     public void setupFavoriteClick() {
-        final ImageView favoriteImage = (ImageView) findViewById(R.id.imageview_favorites);
+        final ImageView favoriteImage = findViewById(R.id.imageview_favorites);
 
         favoriteImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,7 +86,6 @@ public class SingleRestaurantInspection extends AppCompatActivity {
                 if (checkFileExists(getInternalName(restaurant.getAddress()+restaurant.getName()) + ".txt")) {
                     deleteInternalFile(getInternalName(restaurant.getAddress()+restaurant.getName()) + ".txt");
                     favoriteImage.setImageResource(R.drawable.add_favorites);
-                    showToast("Removed " + restaurant.getName() + " from favorites");
                 }
                 else {
                     try {
@@ -105,7 +94,6 @@ public class SingleRestaurantInspection extends AppCompatActivity {
                         FileHandler.writeToInternalMemory(buf, restaurant.getInspections().size() + "");
                         buf.close();
                         favoriteImage.setImageResource(R.drawable.remove_favorites);
-                        showToast("Added " + restaurant.getName() + " to favorites");
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     } catch (UnsupportedEncodingException e) {
@@ -198,7 +186,7 @@ public class SingleRestaurantInspection extends AppCompatActivity {
             view.setText(getString(R.string.number_non_critical_issues,
                     restaurant.getInspections().get(position).getNumNonCritical()));
             view = itemView.findViewById(R.id.screen2_inspection_date);
-            if(restaurant.getInspections().get(position).getHowLongAgo().contains("days ago")){
+            if (restaurant.getInspections().get(position).getHowLongAgo().contains("days ago")){
                 int i = 0;
                 String temp = "";
                 while(restaurant.getInspections().get(0).getHowLongAgo().charAt(i) != ' '){
@@ -209,7 +197,7 @@ public class SingleRestaurantInspection extends AppCompatActivity {
                 temp += getString(R.string.days_ago_for_date);
                 view.setText(getString(R.string.current_restaurant_date,
                         temp));
-            }else {
+            } else {
                 view.setText(restaurant.getInspections().get(position).getHowLongAgo());
             }
             parent.setBackgroundColor(getResources().getColor(R.color.beige));
