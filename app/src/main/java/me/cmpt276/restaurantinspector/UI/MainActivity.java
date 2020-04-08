@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private RestaurantManager restaurantManager;
     private List<Restaurant> myRestaurants;
     private Map<String, Integer> hashMap;
+
     List<Restaurant> currentFilterResults;
     List<Restaurant> searchResults;
     String[] hazardList;
@@ -53,6 +54,10 @@ public class MainActivity extends AppCompatActivity {
     private static final String LIST_STATE = "listState";
     private Parcelable mListState = null;
     SearchView searchView;
+
+    private String sent_string = "query_main";
+    private String received_string = "query_map";
+    public String QUERY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +75,9 @@ public class MainActivity extends AppCompatActivity {
         setupToolBar();
         populateListView(myRestaurants);
         populateHashMap();
+
+        Intent intent = getIntent();
+        QUERY = intent.getStringExtra(received_string);
     }
 
     @Override
@@ -77,9 +85,12 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu, menu);
         MenuItem menuItem = menu.findItem(R.id.search_view);
         searchView = (SearchView) menuItem.getActionView();
+
+        searchView.setQuery(QUERY,true);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
+                onQueryTextChange(s);
                 return false;
             }
 
@@ -92,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 populateListView(searchResults);
+                QUERY = s;
                 return false;
             }
         });
@@ -249,6 +261,7 @@ public class MainActivity extends AppCompatActivity {
                         finish();
                         Intent intent = GoogleMapActivity.makeIntent(MainActivity.this);
                         intent.putExtra("fetch_data", "no_fetch");
+                        intent.putExtra(sent_string,QUERY);
                         startActivity(intent);
                         return true;
                 }

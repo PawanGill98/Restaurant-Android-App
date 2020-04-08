@@ -25,8 +25,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -88,9 +90,19 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
     private ClusterManager<MyItem> mClusterManager;
     private ArrayList<MyItem> mMarkerArray = new ArrayList<>();
 
-    List<MyItem> currentFilterResults;
-    String[] hazardList;
     boolean[] checkedItems;
+    private SearchView searchView;
+    private String[] radioList;
+    private String[] hazardValueList;
+    private String hazardLevelInput;
+    boolean selected;
+    private List<Restaurant> currentFilterResults1;
+    private List<Restaurant> currentFilterResults2;
+    private List<MyItem> currentFilterResults3;
+
+    private String received_string = "query_main";
+    private String sent_string = "query_map";
+    private String QUERY;
 
     private RestaurantManager restaurantManager;
     private List<Restaurant> restaurants;
@@ -136,6 +148,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_google_map);
+        setTitle("Map of Restaurants");
         Bundle extras = getIntent().getExtras();
         setupDialog();
         String fetch = "";
@@ -285,23 +298,32 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         setUpBottomNavigation();
         setUpMapFragmentSupport();
 
-        hazardList = new String[]{getString(R.string.filter_hazard_low), getString(R.string.filter_hazard_moderate)
-                ,getString(R.string.filter_hazard_high), getString(R.string.filter_favorites)};        checkedItems = new boolean[] {true, true, true, false};
-        currentFilterResults = new ArrayList<>();
+        hazardValueList = new String[]{"Low", "Moderate", "High"};
+        radioList = new String[] {getString(R.string.filter_hazard_low), getString(R.string.filter_hazard_moderate),
+                getString(R.string.filter_hazard_high)};
+        checkedItems = new boolean[] {false};
+        selected = false;
 
+        currentFilterResults3 = new ArrayList<>();
+
+        Intent intent = getIntent();
+        QUERY = intent.getStringExtra(received_string);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
         getMenuInflater().inflate(R.menu.menu,menu);
-        MenuItem menuItem = menu.findItem(R.id.search_view);
-        SearchView searchView = (SearchView) menuItem.getActionView();
+        final MenuItem menuItem = menu.findItem(R.id.search_view);
+        searchView = (SearchView) menuItem.getActionView();
         searchView.setQueryHint(getString(R.string.search_hint));
+
+        searchView.setQuery(QUERY, true);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                onQueryTextChange(query);
                 return false;
             }
 
@@ -310,7 +332,9 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 mClusterManager.clearItems();
                 mClusterManager.cluster();
 
-                if(currentFilterResults.isEmpty()) {
+                QUERY = newText;
+
+                if(currentFilterResults3.isEmpty()) {
                     for (MyItem marker : mMarkerArray) {
                         if (marker.getTitle().toLowerCase().contains(newText.toLowerCase())) {
                             mClusterManager.addItem(marker);
@@ -318,7 +342,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                     }
                 }
                 else{
-                    for (MyItem marker : currentFilterResults) {
+                    for (MyItem marker : currentFilterResults3) {
                         if (marker.getTitle().toLowerCase().contains(newText.toLowerCase())) {
                             mClusterManager.addItem(marker);
                         }
@@ -326,7 +350,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 }
                 mClusterManager.cluster();
 
-                if(newText.isEmpty() && currentFilterResults.isEmpty()) {
+                if(newText.isEmpty() && currentFilterResults3.isEmpty()) {
                     mClusterManager.clearItems();
                     mClusterManager.cluster();
                     setUpClusters();
@@ -334,7 +358,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 else if (newText.isEmpty()){
                     mClusterManager.clearItems();
                     mClusterManager.cluster();
-                    mClusterManager.addItems(currentFilterResults);
+                    mClusterManager.addItems(currentFilterResults3);
                     mClusterManager.cluster();
                 }
                 return true;
@@ -350,29 +374,55 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
             AlertDialog.Builder mBuilder = new AlertDialog.Builder(GoogleMapActivity.this);
             mBuilder.setTitle(getString(R.string.option_title));
+            mBuilder.setCancelable(false);
+
 
             final EditText lessThanNCriticalInput = new EditText(GoogleMapActivity.this);
             lessThanNCriticalInput.setInputType(InputType.TYPE_CLASS_NUMBER);
             lessThanNCriticalInput.setHint(getString(R.string.hint));
-            mBuilder.setView(lessThanNCriticalInput);
 
-            mBuilder.setMultiChoiceItems(hazardList, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
+            final CheckBox favouriteInput = new CheckBox(GoogleMapActivity.this);
+            favouriteInput.setText(getString(R.string.filter_favorites));
+
+            LinearLayout layout = new LinearLayout(this);
+            layout.setOrientation(LinearLayout.VERTICAL);
+            layout.addView(lessThanNCriticalInput);
+            layout.addView(favouriteInput);
+            layout.setPadding(80, 0, 0, 0);
+            mBuilder.setView(layout);
+
+            mBuilder.setSingleChoiceItems(radioList, -1, new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialogInterface, int position, boolean isChecked) {
-                    checkedItems[position] = isChecked;
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    hazardLevelInput = hazardValueList[i];
+                    selected = true;
                 }
             });
-
-            mBuilder.setCancelable(false);
 
             mBuilder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int which) {
-                    currentFilterResults = new ArrayList<>();
-                    for(Restaurant x: restaurants) {
-                        if(checkedItems[3] && isFavourite(x) && isLessThanNCritical(x, lessThanNCriticalInput.getText().toString())) {
-                            filterHazardLevel(x);
-                            if(!checkedItems[0] && !checkedItems[1] && !checkedItems[2]) {
+                    currentFilterResults1 = new ArrayList<>();
+                    if(favouriteInput.isChecked()) {
+                        for (Restaurant x : restaurants) {
+                            if (isFavourite(x)) {
+                                    currentFilterResults1.add(x);
+                            }
+                        }
+                    } else{
+                        currentFilterResults1 = restaurants;
+                    }
+                    currentFilterResults2 = new ArrayList<>();
+                    for(Restaurant x : currentFilterResults1) {
+                        if(isLessThanNCritical(x, lessThanNCriticalInput.getText().toString())) {
+                            currentFilterResults2.add(x);
+                        }
+                    }
+                    currentFilterResults3 = new ArrayList<>();
+                    if(selected) {
+                        for (Restaurant x : currentFilterResults2) {
+                            if (x.hasInspections()
+                                    && x.getInspections().get(0).getHazardRating().equals(hazardLevelInput)) {
                                 final Location targetLocation = new Location("");
                                 targetLocation.setLatitude(x.getLatitude());
 
@@ -387,16 +437,33 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                                         .title(getString(R.string.restaurant_name_on_map, x.getName()))
                                         .snippet(getString(R.string.snippet, setSnippet(x)))
                                         .icon(BitmapDescriptorFactory.defaultMarker(color));
-                                currentFilterResults.add(new MyItem(options.getPosition(),options.getTitle(),options.getSnippet(),options.getIcon()));
+
+                                currentFilterResults3.add(new MyItem(options.getPosition(),options.getTitle(),options.getSnippet(),options.getIcon()));
                             }
                         }
-                        else if (!checkedItems[3] && isLessThanNCritical(x, lessThanNCriticalInput.getText().toString())) {
-                            filterHazardLevel(x);
+                    } else {
+                        for(Restaurant x : currentFilterResults2){
+                            final Location targetLocation = new Location("");
+                            targetLocation.setLatitude(x.getLatitude());
+
+                            targetLocation.setLongitude(x.getLongitude());
+                            LatLng latLng = new LatLng(targetLocation.getLatitude(), targetLocation.getLongitude());
+                            float color = BitmapDescriptorFactory.HUE_BLUE;
+                            if(x.hasInspections()) {
+                                color = setMarkerColor(color, x.getInspections().get(0));
+                            }
+                            MarkerOptions options = new MarkerOptions()
+                                    .position(latLng)
+                                    .title(getString(R.string.restaurant_name_on_map, x.getName()))
+                                    .snippet(getString(R.string.snippet, setSnippet(x)))
+                                    .icon(BitmapDescriptorFactory.defaultMarker(color));
+
+                            currentFilterResults3.add(new MyItem(options.getPosition(),options.getTitle(),options.getSnippet(),options.getIcon()));
                         }
                     }
                     mClusterManager.clearItems();
                     mClusterManager.cluster();
-                    mClusterManager.addItems(currentFilterResults);
+                    mClusterManager.addItems(currentFilterResults3);
                     mClusterManager.cluster();
                 }
             });
@@ -412,7 +479,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 @Override
                 public void onClick(DialogInterface dialogInterface, int which) {
                     checkedItems = new boolean[] {true, true, true, false};
-                    currentFilterResults.clear();
+                    currentFilterResults3.clear();
                     mClusterManager.clearItems();
                     mClusterManager.cluster();
                     mClusterManager.addItems(mMarkerArray);
@@ -446,35 +513,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
     private boolean isFavourite(Restaurant x) {
         return checkFileExists(getInternalName(x.getAddress() + x.getName() + ".txt"));
-    }
-
-    private void filterHazardLevel(Restaurant x) {
-        if (x.hasInspections()) {
-            final Location targetLocation = new Location("");
-            targetLocation.setLatitude(x.getLatitude());
-
-            targetLocation.setLongitude(x.getLongitude());
-            LatLng latLng = new LatLng(targetLocation.getLatitude(), targetLocation.getLongitude());
-            float color = BitmapDescriptorFactory.HUE_BLUE;
-            if(x.hasInspections()) {
-                color = setMarkerColor(color, x.getInspections().get(0));
-            }
-            MarkerOptions options = new MarkerOptions()
-                    .position(latLng)
-                    .title(getString(R.string.restaurant_name_on_map, x.getName()))
-                    .snippet(getString(R.string.snippet, setSnippet(x)))
-                    .icon(BitmapDescriptorFactory.defaultMarker(color));
-
-            if (checkedItems[0] && x.getInspections().get(0).getHazardRating().equals("Low")) {
-                currentFilterResults.add(new MyItem(options.getPosition(),options.getTitle(),options.getSnippet(),options.getIcon()));
-            }
-            else if (checkedItems[1] && x.getInspections().get(0).getHazardRating().equals("Moderate")) {
-                currentFilterResults.add(new MyItem(options.getPosition(),options.getTitle(),options.getSnippet(),options.getIcon()));
-            }
-            else if (checkedItems[2] && x.getInspections().get(0).getHazardRating().equals("High")) {
-                currentFilterResults.add(new MyItem(options.getPosition(),options.getTitle(),options.getSnippet(),options.getIcon()));
-            }
-        }
     }
 
     private void onBackgroundTaskDataObtained(String results, String results2) {
@@ -686,6 +724,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                         overridePendingTransition(0,0);
                         finish();
                         Intent myIntent = new Intent(GoogleMapActivity.this, MainActivity.class);
+                        myIntent.putExtra(sent_string,QUERY);
                         GoogleMapActivity.this.startActivity(myIntent);
                         return true;
                     case R.id.map:
