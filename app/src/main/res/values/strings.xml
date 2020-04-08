@@ -58,6 +58,7 @@
     <string name="hint">Critical Issues Less than: N</string>
     <string name="clear">Clear</string>
     <string name="ok">OK</string>
+    <string name="search_hint">Search here!</string>
 
     <string name="violation_101">Building regulations not followed</string>
     <string name="violation_102">Unapproved food premise</string>

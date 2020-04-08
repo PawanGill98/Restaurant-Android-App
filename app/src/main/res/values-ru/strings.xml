@@ -59,6 +59,8 @@
     <string name="hint">Кол-во. крит. ошибок меньше чем: Х</string>
     <string name="clear">Отмена</string>
     <string name="ok">OK</string>
+    <string name="search_hint">Введите запрос!</string>
+
 
     <string name="violation_101">Строительные нормы не соблюдены</string>
     <string name="violation_102">Неутвержденное помещение для пищи</string>

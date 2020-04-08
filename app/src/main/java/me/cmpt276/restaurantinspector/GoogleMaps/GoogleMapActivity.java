@@ -285,8 +285,8 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         setUpBottomNavigation();
         setUpMapFragmentSupport();
 
-        hazardList = new String[]{"Low Hazard Level", "Moderate Hazard Level", "High Hazard Level", "Favourites"};
-        checkedItems = new boolean[] {true, true, true, false};
+        hazardList = new String[]{getString(R.string.filter_hazard_low), getString(R.string.filter_hazard_moderate)
+                ,getString(R.string.filter_hazard_high), getString(R.string.filter_favorites)};        checkedItems = new boolean[] {true, true, true, false};
         currentFilterResults = new ArrayList<>();
 
     }
@@ -297,7 +297,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         getMenuInflater().inflate(R.menu.menu,menu);
         MenuItem menuItem = menu.findItem(R.id.search_view);
         SearchView searchView = (SearchView) menuItem.getActionView();
-        searchView.setQueryHint("Search Here!");
+        searchView.setQueryHint(getString(R.string.search_hint));
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -349,11 +349,11 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         if(item.getItemId() == R.id.options){
 
             AlertDialog.Builder mBuilder = new AlertDialog.Builder(GoogleMapActivity.this);
-            mBuilder.setTitle("Options");
+            mBuilder.setTitle(getString(R.string.option_title));
 
             final EditText lessThanNCriticalInput = new EditText(GoogleMapActivity.this);
             lessThanNCriticalInput.setInputType(InputType.TYPE_CLASS_NUMBER);
-            lessThanNCriticalInput.setHint("Critical Issues Less than: N");
+            lessThanNCriticalInput.setHint(getString(R.string.hint));
             mBuilder.setView(lessThanNCriticalInput);
 
             mBuilder.setMultiChoiceItems(hazardList, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
@@ -365,7 +365,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
             mBuilder.setCancelable(false);
 
-            mBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            mBuilder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int which) {
                     currentFilterResults = new ArrayList<>();
@@ -401,14 +401,14 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 }
             });
 
-            mBuilder.setNegativeButton("DISMISS", new DialogInterface.OnClickListener() {
+            mBuilder.setNegativeButton(getString(R.string.dismiss), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     dialogInterface.dismiss();
                 }
             });
 
-            mBuilder.setNeutralButton("CLEAR", new DialogInterface.OnClickListener() {
+            mBuilder.setNeutralButton(getString(R.string.clear), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int which) {
                     checkedItems = new boolean[] {true, true, true, false};
@@ -439,18 +439,13 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
     private boolean isLessThanNCritical(Restaurant x, String str) {
         if(x.hasInspections()) {
-            if (x.getInspections().get(0).getNumCritical() <= convertStringToInt(str)) {
-                return true;
-            }
+            return x.getInspections().get(0).getNumCritical() <= convertStringToInt(str);
         }
         return false;
     }
 
     private boolean isFavourite(Restaurant x) {
-        if(checkFileExists(getInternalName(x.getAddress() + x.getName() + ".txt"))) {
-            return true;
-        }
-        return false;
+        return checkFileExists(getInternalName(x.getAddress() + x.getName() + ".txt"));
     }
 
     private void filterHazardLevel(Restaurant x) {
@@ -614,7 +609,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                         if (checkFileExists(getInternalName(restaurant.getAddress()+restaurant.getName()) + ".txt")) {
 
                             int numberInspectionsOnFile;
-                            InputStream inp = null;
+                            InputStream inp;
                             try {
                                 inp = openFileInput(getInternalName(restaurant.getAddress()+restaurant.getName()) + ".txt");
                                 BufferedReader bufreader = new BufferedReader(new InputStreamReader(inp, Charset.forName("UTF-8")));
@@ -643,8 +638,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                         }
                     }
 
-
-
                     if (!desc.equals("")) {
                         dialog = new Dialog(GoogleMapActivity.this);
                         dialog.setContentView(R.layout.favorites_message_layout);
@@ -657,9 +650,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                             }
                         });
 
-                        TextView myTextView = (TextView) dialog.findViewById(R.id.update_updatedtextview);
-                        //myTextView.setMovementMethod(new ScrollingMovementMethod());
-                        Log.d("Wef", "nig " + desc);
+                        TextView myTextView = dialog.findViewById(R.id.update_updatedtextview);
                         myTextView.setText(desc);
 
                         dialog.show();
