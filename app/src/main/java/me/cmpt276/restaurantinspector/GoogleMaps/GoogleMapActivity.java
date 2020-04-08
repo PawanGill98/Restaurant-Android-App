@@ -99,6 +99,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
     private List<Restaurant> currentFilterResults1;
     private List<Restaurant> currentFilterResults2;
     private List<MyItem> currentFilterResults3;
+    
 
     private String received_string = "query_main";
     private String sent_string = "query_map";
@@ -155,7 +156,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         if (extras != null) {
             fetch = extras.getString("fetch_data");
         }
-
         if (fetch != null && fetch.equals("no_fetch")) {
             // Don't fetch data
         } else {
