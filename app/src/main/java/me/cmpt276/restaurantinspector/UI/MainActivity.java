@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
             mBuilder.setNeutralButton(getString(R.string.clear), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int which) {
-                    checkedItems = new boolean[] {true, true, true, false};
+                    checkedItems = new boolean[] {false};
                     currentFilterResults3 = myRestaurants;
                     searchResults = myRestaurants;
                     searchView.setQuery("", true);
