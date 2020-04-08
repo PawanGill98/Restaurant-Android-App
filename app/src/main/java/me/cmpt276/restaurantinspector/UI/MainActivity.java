@@ -13,8 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -46,14 +48,18 @@ public class MainActivity extends AppCompatActivity {
     private RestaurantManager restaurantManager;
     private List<Restaurant> myRestaurants;
     private Map<String, Integer> hashMap;
-
-    List<Restaurant> currentFilterResults;
-    List<Restaurant> searchResults;
-    String[] hazardList;
-    boolean[] checkedItems;
     private static final String LIST_STATE = "listState";
     private Parcelable mListState = null;
-    SearchView searchView;
+    private SearchView searchView;
+    boolean[] checkedItems;
+    private String[] radioList;
+    private String[] hazardValueList;
+    private String hazardLevelInput;
+    boolean selected;
+    private List<Restaurant> searchResults;
+    private List<Restaurant> currentFilterResults1;
+    private List<Restaurant> currentFilterResults2;
+    private List<Restaurant> currentFilterResults3;
 
     private String sent_string = "query_main";
     private String received_string = "query_map";
@@ -65,12 +71,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         restaurantManager = RestaurantManager.getInstance();
         myRestaurants = restaurantManager.getRestaurants();
-        currentFilterResults = restaurantManager.getRestaurants();
-        searchResults = currentFilterResults;
         hashMap = new HashMap<>();
-        hazardList = new String[]{getString(R.string.filter_hazard_low), getString(R.string.filter_hazard_moderate)
-                ,getString(R.string.filter_hazard_high), getString(R.string.filter_favorites)};
-        checkedItems = new boolean[] {true, true, true, false};
+        searchResults = myRestaurants;
+        currentFilterResults3 = restaurantManager.getRestaurants();
+        hazardValueList = new String[]{"Low", "Moderate", "High"};
+        radioList = new String[] {getString(R.string.filter_hazard_low), getString(R.string.filter_hazard_moderate),
+                getString(R.string.filter_hazard_high)};
+        checkedItems = new boolean[] {false};
+        selected = false;
         setUpBottomNavigation();
         setupToolBar();
         populateListView(myRestaurants);
@@ -97,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String s) {
                 searchResults = new ArrayList<>();
-                for(Restaurant x: currentFilterResults){
+                for(Restaurant x: currentFilterResults3){
                     if(x.getName().toLowerCase().contains(s.toLowerCase())){
                         searchResults.add(x);
                     }
@@ -107,6 +115,9 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+        //searchView.setQuery("mc", true);
+        //searchView.setIconified(false);
+        //searchView.clearFocus();
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -116,41 +127,66 @@ public class MainActivity extends AppCompatActivity {
 
             AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
             mBuilder.setTitle(getString(R.string.option_title));
+            mBuilder.setCancelable(false);
 
             final EditText lessThanNCriticalInput = new EditText(MainActivity.this);
             lessThanNCriticalInput.setInputType(InputType.TYPE_CLASS_NUMBER);
             lessThanNCriticalInput.setHint(getString(R.string.hint));
-            mBuilder.setView(lessThanNCriticalInput);
 
-            mBuilder.setMultiChoiceItems(hazardList, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
+            final CheckBox favouriteInput = new CheckBox(MainActivity.this);
+            favouriteInput.setText(getString(R.string.filter_favorites));
+
+            LinearLayout layout = new LinearLayout(this);
+            layout.setOrientation(LinearLayout.VERTICAL);
+            layout.addView(lessThanNCriticalInput);
+            layout.addView(favouriteInput);
+            layout.setPadding(80, 0, 0, 0);
+            mBuilder.setView(layout);
+
+            mBuilder.setSingleChoiceItems(radioList, -1, new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialogInterface, int position, boolean isChecked) {
-                    checkedItems[position] = isChecked;
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    hazardLevelInput = hazardValueList[i];
+                    selected = true;
                 }
             });
-
-            mBuilder.setCancelable(false);
 
             mBuilder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int which) {
-                    currentFilterResults = new ArrayList<>();
-                    for(Restaurant x: myRestaurants) {
-
-                        if(checkedItems[3] && isFavourite(x) && isLessThanNCritical(x, lessThanNCriticalInput.getText().toString())) {
-                            filterHazardLevel(x);
-                            if(!checkedItems[0] && !checkedItems[1] && !checkedItems[2]) {
-                                currentFilterResults.add(x);
+                    currentFilterResults1 = new ArrayList<>();
+                    if(favouriteInput.isChecked()) {
+                        for (Restaurant x : myRestaurants) {
+                            if (isFavourite(x)) {
+                                currentFilterResults1.add(x);
                             }
                         }
-                        else if (!checkedItems[3] && isLessThanNCritical(x, lessThanNCriticalInput.getText().toString())) {
-                            filterHazardLevel(x);
+                    } else{
+                        currentFilterResults1 = myRestaurants;
+                    }
+                    currentFilterResults2 = new ArrayList<>();
+                    for(Restaurant x : currentFilterResults1) {
+                        if(isLessThanNCritical(x, lessThanNCriticalInput.getText().toString())) {
+                            currentFilterResults2.add(x);
                         }
                     }
-                    populateListView(currentFilterResults);
+                    currentFilterResults3 = new ArrayList<>();
+                    if(selected) {
+                        for (Restaurant x : currentFilterResults2) {
+                            if (x.hasInspections()
+                                    && x.getInspections().get(0).getHazardRating().equals(hazardLevelInput)) {
+                                currentFilterResults3.add(x);
+                            }
+                        }
+                    } else {
+                        currentFilterResults3 = currentFilterResults2;
+                    }
+                    populateListView(currentFilterResults3);
                     CharSequence temp = searchView.getQuery();
                     searchView.setQuery("", true);
                     searchView.setQuery(temp, true);
+                    hazardLevelInput = "";
+                    selected = false;
                 }
             });
 
@@ -164,16 +200,16 @@ public class MainActivity extends AppCompatActivity {
             mBuilder.setNeutralButton(getString(R.string.clear), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int which) {
-                    checkedItems = new boolean[] {true, true, true, false};
-                    currentFilterResults = myRestaurants;
+                    checkedItems = new boolean[] {false};
+                    currentFilterResults3 = myRestaurants;
                     searchResults = myRestaurants;
+                    searchView.setQuery("", true);
                     populateListView(myRestaurants);
                 }
             });
 
             AlertDialog mDialog = mBuilder.create();
             mDialog.show();
-            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -202,20 +238,6 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         return false;
-    }
-
-    private void filterHazardLevel(Restaurant x) {
-        if (x.hasInspections()) {
-            if (checkedItems[0] && x.getInspections().get(0).getHazardRating().equals("Low")) {
-                currentFilterResults.add(x);
-            }
-            else if (checkedItems[1] && x.getInspections().get(0).getHazardRating().equals("Moderate")) {
-                currentFilterResults.add(x);
-            }
-            else if (checkedItems[2] && x.getInspections().get(0).getHazardRating().equals("High")) {
-                currentFilterResults.add(x);
-            }
-        }
     }
 
     // Reference: https://stackoverflow.com/questions/3014089/maintain-save-restore-scroll-position-when-returning-to-a-listview
