@@ -6,8 +6,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -16,12 +18,16 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.text.InputType;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -81,6 +87,10 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
     private ClusterManager<MyItem> mClusterManager;
     private ArrayList<MyItem> mMarkerArray = new ArrayList<>();
+
+    List<MyItem> currentFilterResults;
+    String[] hazardList;
+    boolean[] checkedItems;
 
     private RestaurantManager restaurantManager;
     private List<Restaurant> restaurants;
@@ -269,13 +279,206 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
             }
         }
 
-
         restaurantManager = RestaurantManager.getInstance();
 
         restaurants = restaurantManager.getRestaurants();
         setUpBottomNavigation();
         setUpMapFragmentSupport();
 
+        hazardList = new String[]{"Low Hazard Level", "Moderate Hazard Level", "High Hazard Level", "Favourites"};
+        checkedItems = new boolean[] {true, true, true, false};
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.menu,menu);
+        MenuItem menuItem = menu.findItem(R.id.search_view);
+        SearchView searchView = (SearchView) menuItem.getActionView();
+        searchView.setQueryHint("Search Here!");
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                mClusterManager.clearItems();
+                mClusterManager.cluster();
+
+                if(currentFilterResults.isEmpty()) {
+                    for (MyItem marker : mMarkerArray) {
+                        if (marker.getTitle().toLowerCase().contains(newText.toLowerCase())) {
+                            mClusterManager.addItem(marker);
+                        }
+                    }
+                }
+                else{
+                    for (MyItem marker : currentFilterResults) {
+                        if (marker.getTitle().toLowerCase().contains(newText.toLowerCase())) {
+                            mClusterManager.addItem(marker);
+                        }
+                    }
+                }
+                mClusterManager.cluster();
+
+                if(newText.isEmpty() && currentFilterResults.isEmpty()) {
+                    mClusterManager.clearItems();
+                    mClusterManager.cluster();
+                    setUpClusters();
+                }
+                else if (newText.isEmpty()){
+                    mClusterManager.clearItems();
+                    mClusterManager.cluster();
+                    mClusterManager.addItems(currentFilterResults);
+                    mClusterManager.cluster();
+                }
+                return true;
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == R.id.options){
+
+            AlertDialog.Builder mBuilder = new AlertDialog.Builder(GoogleMapActivity.this);
+            mBuilder.setTitle("Options");
+
+            final EditText lessThanNCriticalInput = new EditText(GoogleMapActivity.this);
+            lessThanNCriticalInput.setInputType(InputType.TYPE_CLASS_NUMBER);
+            lessThanNCriticalInput.setHint("Critical Issues Less than: N");
+            mBuilder.setView(lessThanNCriticalInput);
+
+            mBuilder.setMultiChoiceItems(hazardList, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int position, boolean isChecked) {
+                    checkedItems[position] = isChecked;
+                }
+            });
+
+            mBuilder.setCancelable(false);
+
+            mBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int which) {
+                    currentFilterResults = new ArrayList<>();
+                    for(Restaurant x: restaurants) {
+                        if(checkedItems[3] && isFavourite(x) && isLessThanNCritical(x, lessThanNCriticalInput.getText().toString())) {
+                            filterHazardLevel(x);
+                            if(!checkedItems[0] && !checkedItems[1] && !checkedItems[2]) {
+                                final Location targetLocation = new Location("");
+                                targetLocation.setLatitude(x.getLatitude());
+
+                                targetLocation.setLongitude(x.getLongitude());
+                                LatLng latLng = new LatLng(targetLocation.getLatitude(), targetLocation.getLongitude());
+                                float color = BitmapDescriptorFactory.HUE_BLUE;
+                                if(x.hasInspections()) {
+                                    color = setMarkerColor(color, x.getInspections().get(0));
+                                }
+                                MarkerOptions options = new MarkerOptions()
+                                        .position(latLng)
+                                        .title(getString(R.string.restaurant_name_on_map, x.getName()))
+                                        .snippet(getString(R.string.snippet, setSnippet(x)))
+                                        .icon(BitmapDescriptorFactory.defaultMarker(color));
+                                currentFilterResults.add(new MyItem(options.getPosition(),options.getTitle(),options.getSnippet(),options.getIcon()));
+                            }
+                        }
+                        else if (!checkedItems[3] && isLessThanNCritical(x, lessThanNCriticalInput.getText().toString())) {
+                            filterHazardLevel(x);
+                        }
+                    }
+                    mClusterManager.clearItems();
+                    mClusterManager.cluster();
+                    mClusterManager.addItems(currentFilterResults);
+                    mClusterManager.cluster();
+                }
+            });
+
+            mBuilder.setNegativeButton("DISMISS", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            });
+
+            mBuilder.setNeutralButton("CLEAR", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int which) {
+                    checkedItems = new boolean[] {true, true, true, false};
+                    currentFilterResults.clear();
+                    mClusterManager.clearItems();
+                    mClusterManager.cluster();
+                    mClusterManager.addItems(mMarkerArray);
+                    mClusterManager.cluster();
+                }
+            });
+
+            AlertDialog mDialog = mBuilder.create();
+            mDialog.show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private int convertStringToInt(String str){
+        int x;
+        try{
+            x = Integer.parseInt(str);
+        }catch(NumberFormatException ex){
+            x = 999;
+        }
+        return x;
+    }
+
+    private boolean isLessThanNCritical(Restaurant x, String str) {
+        if(x.hasInspections()) {
+            if (x.getInspections().get(0).getNumCritical() <= convertStringToInt(str)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isFavourite(Restaurant x) {
+        if(checkFileExists(getInternalName(x.getAddress() + x.getName() + ".txt"))) {
+            return true;
+        }
+        return false;
+    }
+
+    private void filterHazardLevel(Restaurant x) {
+        if (x.hasInspections()) {
+            final Location targetLocation = new Location("");
+            targetLocation.setLatitude(x.getLatitude());
+
+            targetLocation.setLongitude(x.getLongitude());
+            LatLng latLng = new LatLng(targetLocation.getLatitude(), targetLocation.getLongitude());
+            float color = BitmapDescriptorFactory.HUE_BLUE;
+            if(x.hasInspections()) {
+                color = setMarkerColor(color, x.getInspections().get(0));
+            }
+            MarkerOptions options = new MarkerOptions()
+                    .position(latLng)
+                    .title(getString(R.string.restaurant_name_on_map, x.getName()))
+                    .snippet(getString(R.string.snippet, setSnippet(x)))
+                    .icon(BitmapDescriptorFactory.defaultMarker(color));
+
+            if (checkedItems[0] && x.getInspections().get(0).getHazardRating().equals("Low")) {
+                currentFilterResults.add(new MyItem(options.getPosition(),options.getTitle(),options.getSnippet(),options.getIcon()));
+            }
+            else if (checkedItems[1] && x.getInspections().get(0).getHazardRating().equals("Moderate")) {
+                currentFilterResults.add(new MyItem(options.getPosition(),options.getTitle(),options.getSnippet(),options.getIcon()));
+            }
+            else if (checkedItems[2] && x.getInspections().get(0).getHazardRating().equals("High")) {
+                currentFilterResults.add(new MyItem(options.getPosition(),options.getTitle(),options.getSnippet(),options.getIcon()));
+            }
+        }
     }
 
     private void onBackgroundTaskDataObtained(String results, String results2) {
