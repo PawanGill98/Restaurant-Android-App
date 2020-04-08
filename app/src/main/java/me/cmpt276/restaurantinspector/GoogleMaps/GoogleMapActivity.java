@@ -287,6 +287,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
         hazardList = new String[]{"Low Hazard Level", "Moderate Hazard Level", "High Hazard Level", "Favourites"};
         checkedItems = new boolean[] {true, true, true, false};
+        currentFilterResults = new ArrayList<>();
 
     }
 
