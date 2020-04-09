@@ -94,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
         MenuItem menuItem = menu.findItem(R.id.search_view);
         searchView = (SearchView) menuItem.getActionView();
 
-        searchView.setQuery(QUERY,true);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
@@ -115,9 +114,11 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-        //searchView.setQuery("mc", true);
-        //searchView.setIconified(false);
-        //searchView.clearFocus();
+        if(QUERY != null && !QUERY.isEmpty()){
+            searchView.setQuery(QUERY, true);
+            searchView.setIconified(false);
+            searchView.clearFocus();
+        }
         return super.onCreateOptionsMenu(menu);
     }
 

@@ -312,13 +312,10 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         getMenuInflater().inflate(R.menu.menu,menu);
         final MenuItem menuItem = menu.findItem(R.id.search_view);
         searchView = (SearchView) menuItem.getActionView();
-        searchView.setQueryHint(getString(R.string.search_hint));
 
-        searchView.setQuery(QUERY, true);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -347,22 +344,19 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 }
                 mClusterManager.cluster();
 
-                if(newText.isEmpty() && currentFilterResults3.isEmpty()) {
-                    mClusterManager.clearItems();
-                    mClusterManager.cluster();
-                    setUpClusters();
-                }
-                else if (newText.isEmpty()){
-                    mClusterManager.clearItems();
-                    mClusterManager.cluster();
-                    mClusterManager.addItems(currentFilterResults3);
-                    mClusterManager.cluster();
-                }
-
                 QUERY = newText;
                 return true;
             }
         });
+
+        if(QUERY != null){
+            if(mClusterManager == null){
+                setUpClusters();
+            }
+            searchView.setQuery(QUERY, true);
+            searchView.setIconified(false);
+            searchView.clearFocus();
+        }
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -482,12 +476,13 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
             mBuilder.setNeutralButton(getString(R.string.clear), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int which) {
-                    checkedItems = new boolean[] {true, true, true, false};
-                    currentFilterResults3.clear();
+                    checkedItems = new boolean[] {false,false,false,false};
+                    searchView.setQuery("", true);
                     mClusterManager.clearItems();
                     mClusterManager.cluster();
                     mClusterManager.addItems(mMarkerArray);
                     mClusterManager.cluster();
+
                 }
             });
 
