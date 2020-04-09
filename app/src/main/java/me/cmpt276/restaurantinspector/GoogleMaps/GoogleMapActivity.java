@@ -319,7 +319,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         searchView.setQueryHint(getString(R.string.search_hint));
 
         searchView.setQuery(QUERY, true);
-
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -331,8 +330,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
             public boolean onQueryTextChange(String newText) {
                 mClusterManager.clearItems();
                 mClusterManager.cluster();
-
-                QUERY = newText;
 
                 if(currentFilterResults3.isEmpty()) {
                     for (MyItem marker : mMarkerArray) {
@@ -361,6 +358,8 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                     mClusterManager.addItems(currentFilterResults3);
                     mClusterManager.cluster();
                 }
+
+                QUERY = newText;
                 return true;
             }
         });
@@ -375,7 +374,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
             AlertDialog.Builder mBuilder = new AlertDialog.Builder(GoogleMapActivity.this);
             mBuilder.setTitle(getString(R.string.option_title));
             mBuilder.setCancelable(false);
-
 
             final EditText lessThanNCriticalInput = new EditText(GoogleMapActivity.this);
             lessThanNCriticalInput.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -465,6 +463,12 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                     mClusterManager.cluster();
                     mClusterManager.addItems(currentFilterResults3);
                     mClusterManager.cluster();
+
+                    CharSequence temp = searchView.getQuery();
+                    searchView.setQuery("", true);
+                    searchView.setQuery(temp, true);
+                    hazardLevelInput = "";
+                    selected = false;
                 }
             });
 
