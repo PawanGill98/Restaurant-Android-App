@@ -478,6 +478,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 public void onClick(DialogInterface dialogInterface, int which) {
                     checkedItems = new boolean[] {false};
                     searchView.setQuery("", true);
+                    currentFilterResults3.clear();
                     mClusterManager.clearItems();
                     mClusterManager.cluster();
                     mClusterManager.addItems(mMarkerArray);
